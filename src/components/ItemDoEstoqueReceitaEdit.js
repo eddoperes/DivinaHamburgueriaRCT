@@ -4,9 +4,11 @@ import { useFetchUnits } from "../hooks/useFetchUnits";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-import { BiAbacus } from 'react-icons/bi';
+import { useNavigate } from "react-router-dom";
 
 const ItemDoEstoqueReceitaEdit = () => {
+
+    const navigate = useNavigate();
 
     const { id } = useParams();
     const { data: item, 
@@ -46,7 +48,8 @@ const ItemDoEstoqueReceitaEdit = () => {
             unityId : unidadeId,
             type: type
         }
-        inventoryItemsEdit(id, data);
+        await inventoryItemsEdit(id, data);
+        navigate("/itensdoestoquereceita");
     }
 
     const handleResetTextValidation = async (e) => {
@@ -60,7 +63,6 @@ const ItemDoEstoqueReceitaEdit = () => {
     return(
         <div>
             <h1>Item do estoque receita</h1>
-            <BiAbacus className="icon"/>
             {errorItem && 
                 <p>{errorItem}</p>
             }
