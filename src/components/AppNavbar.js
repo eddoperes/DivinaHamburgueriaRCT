@@ -10,11 +10,11 @@ import { MdFastfood } from 'react-icons/md';
 const AppNavbar = () => {
   return (
     <div className="navbar">
-
+    
       <Link to={'/'}>
         <AiFillHome className="icon"/> 
         Home
-      </Link>      
+      </Link>            
       
       <div className="dropdown">
         <button className="dropbtn">           
@@ -36,8 +36,8 @@ const AppNavbar = () => {
           Estoques
         </button>
         <div className="dropdown-content">
-          <Link to={'/ItensDoEstoqueReceita'}>Itens do estoque</Link>
-          <Link to={'/ItensDoEstoqueReceita'}>Pedidos compra</Link>
+          <Link to={'/InventoryItems'}>Itens do estoque</Link>
+          <Link to={'/PurchaseOrders'}>Pedidos compra</Link>
           <hr />
           <a>Entrada no estoque</a>
           <hr />

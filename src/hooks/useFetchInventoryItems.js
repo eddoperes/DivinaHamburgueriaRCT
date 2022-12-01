@@ -7,28 +7,32 @@ export const useFetchInventoryItems = () => {
     const { url } = useContext(MainContext);
 
     const {data, error, 
-           apiGetAll, apiGetById, 
+           apiGetMany, apiGetById, 
            apiAdd, apiEdit,
-           apiRemove} = useFetchApi(`${url}/inventoryitems`);
+           apiRemove} = useFetchApi();
 
     const inventoryItemsGetAll = async () => {
-        await apiGetAll();
+        await apiGetMany(`${url}/inventoryitems`);
+    }
+
+    const inventoryItemsGetByNameAndOrType = async (name, type) => {
+        await apiGetMany(`${url}/inventoryitems/getbynameandortype?name=${name}&type=${type}`);
     }
 
     const inventoryItemsGetById = async (id) => {
-        await apiGetById(id);
+        await apiGetById(`${url}/inventoryitems`, id);
     }
 
     const inventoryItemsAdd = async (data) => {
-        await apiAdd(data);
+        await apiAdd(`${url}/inventoryitems`, data);
     }
 
     const inventoryItemsEdit = async (id, data) => {
-        await apiEdit(id, data);
+        await apiEdit(`${url}/inventoryitems`, id, data);
     }
 
     const inventoryItemsRemove = async (id) => {
-        await apiRemove(id);
+        await apiRemove(`${url}/inventoryitems`, id);
     }
 
     return {data, error, 
@@ -36,6 +40,7 @@ export const useFetchInventoryItems = () => {
             inventoryItemsGetById, 
             inventoryItemsAdd, 
             inventoryItemsEdit, 
-            inventoryItemsRemove};
+            inventoryItemsRemove,
+            inventoryItemsGetByNameAndOrType};
 
 }

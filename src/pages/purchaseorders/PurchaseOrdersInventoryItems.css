@@ -1,0 +1,30 @@
+.input-edit-inventory-item, 
+.select-edit-inventory-item{    
+    margin-bottom: 1px;
+}
+
+.select-edit-inventory-item{
+    width: 22%;
+}
+
+.input-edit-text-inventory-item,
+.input-edit-number-inventory-item{
+    width: 22%;
+}
+
+.input-edit-number-inventory-item{
+    text-align: right;
+}
+
+.input-edit-text-inventory-item:invalid,
+.input-edit-number-inventory-item:invalid{
+    background-color: #fffafa;
+    border-color: red;
+}
+
+.inventory-item-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}

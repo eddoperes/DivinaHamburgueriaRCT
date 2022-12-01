@@ -1,11 +1,11 @@
 import {useState} from 'react';
 
-export const useFetchApi = (url) => {
+export const useFetchApi = () => {
 
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
 
-    const apiGetAll = async () => {
+    const apiGetMany = async (url) => {
         try
         {
             const res = await fetch(url);
@@ -17,11 +17,11 @@ export const useFetchApi = (url) => {
         }
         catch(error)
         {
-            setError(error.message)
+            setError(error.message);
         }   
     }
 
-    const apiGetById = async (id) => {
+    const apiGetById = async (url, id) => {
         try
         {
             const res = await fetch(`${url}/${id}`);
@@ -37,7 +37,7 @@ export const useFetchApi = (url) => {
         }
     }
 
-    const apiAdd = async (data) => {
+    const apiAdd = async (url, data) => {
         try
         {
             const res = await fetch(url, {
@@ -57,7 +57,7 @@ export const useFetchApi = (url) => {
         }
     }
 
-    const apiEdit = async (id, data) => {
+    const apiEdit = async (url, id, data) => {
         try
         {
             const res = await fetch(`${url}/${id}`, {
@@ -77,7 +77,27 @@ export const useFetchApi = (url) => {
         }
     }
 
-    const apiRemove = async (id) => {
+    const apiPatch = async (url, id, data) => {
+        try
+        {
+            const res = await fetch(`${url}/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "content-type" : "application/json"
+                },
+                body: JSON.stringify(data)
+            }); 
+            if (res.ok === false){
+                throw new Error("Not 2xx response");
+            }           
+        }
+        catch(error)
+        {
+            setError(error.message)
+        }
+    }
+
+    const apiRemove = async (url, id) => {
         try
         {
             const res = await fetch(`${url}/${id}`, {
@@ -93,8 +113,8 @@ export const useFetchApi = (url) => {
         }
     }
 
-    return {data, error, 
-            apiGetAll, apiGetById, 
-            apiAdd, apiEdit, apiRemove};
+    return {data, error,
+            apiGetMany, apiGetById, 
+            apiAdd, apiEdit, apiPatch, apiRemove};
 
 }
