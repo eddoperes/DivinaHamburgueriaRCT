@@ -87,7 +87,7 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("handleSubmit")
+    //console.log("handleSubmit")
 
     var data;
     if (configure.showState)
