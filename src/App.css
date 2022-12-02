@@ -1,6 +1,8 @@
+/*
 .App {
   text-align: center;
 }
+*/
 
 .App-logo {
   height: 40vmin;
@@ -36,3 +38,306 @@
     transform: rotate(360deg);
   }
 }
+
+.error-message,
+.waiting-icon
+{
+    text-align: center;
+}
+
+
+
+/* form edition begin */
+
+.h1-edit{
+  text-align: center;
+}
+
+.form-edit{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 75%;
+}
+
+.input-edit, 
+.select-edit{    
+  margin-bottom: 10px;
+}
+
+.select-edit{
+  width: 100%;
+}
+
+.input-edit-text,
+.input-edit-number{
+  width: 99%;
+}
+
+.textarea-edit{
+  width: 99%;
+  height: 50px;
+}
+
+.input-edit-text:invalid,
+.input-edit-number:invalid{
+  background-color: #fffafa;
+  border-color: red;
+}
+
+.input-edit-submit{
+  margin-top: 10px;
+  float: right;
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  background-color: #009900;
+  border: 1px solid #007700;
+}
+
+.input-edit-submit:hover{
+  background-color: #007700;
+}
+
+.input-edit-submit-remove{
+  margin-top: 10px;
+  float: right;
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  background-color: #990000;
+  border: 1px solid #770000;
+}
+
+.input-edit-submit-remove:hover{
+  background-color: #770000;
+}
+
+.warning-edit{
+  color:#bb0000;
+  float: right;
+}
+
+.clear-both{
+  clear: both;
+}
+
+
+.accordion-container{
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.accordion-button {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 3px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.5s;
+  border: 1px solid black; 
+}
+
+.accordion-active, .accordion-button:hover {
+  background-color: #ccc; 
+}
+
+.accordion-panel {
+  display: none;
+  padding: 10px;
+  border: 1px solid black;  
+  border-top: none;  
+}
+
+.accordion-up{
+  font-size: larger;
+  float: right;
+  display: none;
+}
+
+.accordion-down{
+  font-size: larger;
+  float: right;
+}
+
+.error-message-edit,
+.waiting-icon-edit
+{
+  text-align: center;
+}
+
+/* form edition end */
+
+
+/* search list begin */
+
+.h1-list{
+  text-align: center;
+} 
+
+.form-list{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #eee;
+}
+
+.input-list, 
+.select-list{    
+  margin-bottom: 10px;
+}
+
+.select-list{
+  width: 71%;
+}
+
+.input-list-text,
+.input-list-number{
+  width: 70%;
+}
+
+.input-list-text:invalid,
+.input-list-number:invalid{
+  background-color: #fffafa;
+  border-color: red;
+}
+
+.input-list-submit{
+  margin-top: 10px;
+  float: right;
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  background-color: #009900;
+  border: 1px solid #007700;
+}
+
+.input-list-submit:hover{
+  background-color: #007700;
+}
+
+.card-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.card{
+  background-color: #eee;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 10px;
+  width: 100px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;   
+  text-align: center; 
+}
+
+.button-new-list-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: .2rem;
+}
+
+.button-new-list{    
+  border: 0.5px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: larger;
+  color: white;
+  background-color: #009900;
+  width: 40px;
+  height: 40px;
+}
+
+.button-new-list:hover{
+  background-color: #007700;
+}
+
+.button-edit-list{
+  border: 0.5px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: larger;
+  color: white;
+  background-color: #009900;
+  width: 40px;
+  height: 40px;
+  margin: .2rem;
+}
+
+.button-edit-list:hover{
+  background-color: #007700;
+}
+
+.button-remove-list{
+  border: 0.5px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: larger;
+  color: white;
+  background-color: #990000;
+  width: 40px;
+  height: 40px;    
+  margin: .2rem;
+}
+
+.button-remove-list:hover{
+  background-color: #770000;
+}
+
+.error-message-list,
+.waiting-icon-list
+{
+  text-align: center;
+}
+
+.main-filter{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.left-filter{
+  width: 70%;
+  display: inline;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.right-filter{
+  width: 20%;
+  display: inline;
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  flex-wrap: wrap;
+}
+
+/* search list end */

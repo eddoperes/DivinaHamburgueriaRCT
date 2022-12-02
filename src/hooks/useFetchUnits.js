@@ -7,28 +7,28 @@ export const useFetchUnits = () => {
     const { url } = useContext(MainContext);
 
     const {data, error, 
-           apiGetAll, apiGetById, 
+           apiGetMany, apiGetById, 
            apiAdd, apiEdit,
-           apiRemove} = useFetchApi(`${url}/units`);
+           apiRemove} = useFetchApi();
 
     const unitsGetAll = async () => {
-        await apiGetAll();
+        await apiGetMany(`${url}/units`);
     }
 
     const unitsGetById = async (id) => {
-        await apiGetById(id);
+        await apiGetById(`${url}/units`, id);
     }
 
     const unitsAdd = async (data) => {
-        await apiAdd(data);
+        await apiAdd(`${url}/units`, data);
     }
 
     const unitsEdit = async (id, data) => {
-        await apiEdit(id, data);
+        await apiEdit(`${url}/units`, id, data);
     }
 
     const unitsRemove = async (id) => {
-        await apiRemove(id);
+        await apiRemove(`${url}/units`, id);
     }
 
     return {data, error, 
