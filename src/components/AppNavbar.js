@@ -22,11 +22,11 @@ const AppNavbar = () => {
           Pedidos
         </button>
         <div className="dropdown-content">
-          <a >Itens do cardápio</a>
-          <a >Cardápios</a>         
+          <Link to={'/'}>Itens do cardápio</Link>
+          <Link to={'/'}>Cardápios</Link>
           <hr />
-          <a >Pedidos salão</a>
-          <a >Pedidos delivery</a>
+          <Link to={'/'}>Pedidos salão</Link>
+          <Link to={'/'}>Pedidos delivery</Link>
         </div>        
       </div> 
 
@@ -39,9 +39,7 @@ const AppNavbar = () => {
           <Link to={'/InventoryItems'}>Itens do estoque</Link>
           <Link to={'/PurchaseOrders'}>Pedidos compra</Link>
           <hr />
-          <a>Entrada no estoque</a>
-          <hr />
-          <a>Estoques</a>
+          <Link to={'/Inventories'}>Estoques</Link>
         </div>        
       </div> 
 
@@ -55,10 +53,10 @@ const AppNavbar = () => {
         </div>        
       </div> 
       
-      <a>
-        <FaUserAlt className="icon"/>
+      <Link to={'/login'}>
+        <FaUserAlt className="icon"/> 
         Login
-      </a>
+      </Link> 
 
     </div>    
   )

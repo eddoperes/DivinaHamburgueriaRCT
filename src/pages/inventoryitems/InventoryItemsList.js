@@ -38,10 +38,13 @@ const InventoryItemsList = () => {
 
     //init
     useEffect(() => {   
-        if (nameRdbRef.current !== null)          
-            nameRdbRef.current.checked = true;
-        if (typeRdbRef.current !== null)          
-            typeRdbRef.current.checked = true;
+        if (nameRdbRef.current !== null &&
+            typeRdbRef.current !== null){
+
+                nameRdbRef.current.checked = true;
+                typeRdbRef.current.checked = true;
+
+        }    
     }, [units]);
 
     //func

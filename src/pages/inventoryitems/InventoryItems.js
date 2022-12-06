@@ -1,5 +1,5 @@
 //react hooks
-import {findDOMNode} from 'react-dom';
+import { findDOMNode } from 'react-dom';
 import { useState, useEffect, useRef } from "react";
 
 //data hooks

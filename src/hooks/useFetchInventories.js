@@ -2,41 +2,40 @@ import { useFetchApi } from './useFetchApi';
 import { useContext } from "react";
 import { MainContext } from '../contexts/MainContext'
 
-export const useFetchInventory = () => {
+export const useFetchInventories = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, 
+    const {data, error, unauthorized,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit,
            apiRemove} = useFetchApi();
 
     const inventoryGetAll = async () => {
-        await apiGetMany(`${url}/inventory`);
+        await apiGetMany(`${url}/inventories`);
     }
 
     const inventoryGetById = async (id) => {
-        await apiGetById(`${url}/inventory`, id);
+        await apiGetById(`${url}/inventories`, id);
     }
 
     const inventoryAdd = async (data) => {
-        await apiAdd(`${url}/inventory`, data);
+        await apiAdd(`${url}/inventories`, data);
     }
 
     const inventoryEdit = async (id, data) => {
-        await apiEdit(`${url}/inventory`, id, data);
+        await apiEdit(`${url}/inventories`, id, data);
     }
 
     const inventoryRemove = async (id) => {
-        await apiRemove(`${url}/inventory`, id);
+        await apiRemove(`${url}/inventories`, id);
     }
 
-    return {data, error, 
+    return {data, error, unauthorized,
             inventoryGetAll, 
             inventoryGetById, 
             inventoryAdd, 
             inventoryEdit, 
-            inventoryRemove,
-            inventoryGetByNameAndOrType};
+            inventoryRemove};
 
 }

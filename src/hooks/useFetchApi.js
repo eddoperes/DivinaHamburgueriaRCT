@@ -4,12 +4,28 @@ export const useFetchApi = () => {
 
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [unauthorized, setUnauthorized] =  useState(false);
+
+    const getToken = () => {
+        const value = window.localStorage.getItem("token");
+        if (value === null)
+            return "";
+        else
+            return JSON.parse(value);
+    }
 
     const apiGetMany = async (url) => {
         try
         {
-            const res = await fetch(url);
-            if (res.ok === false){
+            const res = await fetch(url, {             
+                headers: {
+                    Authorization : `Bearer ${getToken()}`
+                }
+            });
+            if (res.status === 401){
+                setUnauthorized(true);
+            }
+            if (res.ok === false){                
                 throw new Error("Not 2xx response");
             }
             const data = await res.json();
@@ -24,7 +40,14 @@ export const useFetchApi = () => {
     const apiGetById = async (url, id) => {
         try
         {
-            const res = await fetch(`${url}/${id}`);
+            const res = await fetch(`${url}/${id}`, {             
+                headers: {
+                    Authorization : `Bearer ${getToken()}`
+                }
+            });
+            if (res.status === 401){
+                setUnauthorized(true);
+            }
             if (res.ok === false){
                 throw new Error("Not 2xx response");
             }
@@ -43,13 +66,19 @@ export const useFetchApi = () => {
             const res = await fetch(url, {
                 method: "POST",
                 headers: {
+                    Authorization : `Bearer ${getToken()}`,
                     "content-type" : "application/json"
                 },
                 body: JSON.stringify(data)
             }); 
+            if (res.status === 401){
+                setUnauthorized(true);
+            }
             if (res.ok === false){
                 throw new Error("Not 2xx response");
-            }           
+            } 
+            const resBody = await res.json();
+            setData(resBody);           
         }
         catch(error)
         {
@@ -63,10 +92,14 @@ export const useFetchApi = () => {
             const res = await fetch(`${url}/${id}`, {
                 method: "PUT",
                 headers: {
+                    Authorization : `Bearer ${getToken()}`,
                     "content-type" : "application/json"
                 },
                 body: JSON.stringify(data)
             }); 
+            if (res.status === 401){
+                setUnauthorized(true);
+            }
             if (res.ok === false){
                 throw new Error("Not 2xx response");
             }           
@@ -83,10 +116,14 @@ export const useFetchApi = () => {
             const res = await fetch(`${url}/${id}`, {
                 method: "PATCH",
                 headers: {
+                    Authorization : `Bearer ${getToken()}`,
                     "content-type" : "application/json"
                 },
                 body: JSON.stringify(data)
             }); 
+            if (res.status === 401){
+                setUnauthorized(true);
+            }
             if (res.ok === false){
                 throw new Error("Not 2xx response");
             }           
@@ -102,7 +139,13 @@ export const useFetchApi = () => {
         {
             const res = await fetch(`${url}/${id}`, {
                 method: "DELETE",
+                headers: {
+                    Authorization : `Bearer ${getToken()}`
+                }
             }); 
+            if (res.status === 401){
+                setUnauthorized(true);
+            }
             if (res.ok === false){
                 throw new Error("Not 2xx response");
             }           
@@ -113,7 +156,7 @@ export const useFetchApi = () => {
         }
     }
 
-    return {data, error,
+    return {data, error, unauthorized,
             apiGetMany, apiGetById, 
             apiAdd, apiEdit, apiPatch, apiRemove};
 

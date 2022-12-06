@@ -18,7 +18,7 @@ const PurchaseOrdersEdit = () => {
 
     //data
     const { id } = useParams();
-    const { data: item, 
+    const { data: item,
             error: errorItem, 
             purchaseOrdersPatch,
             purchaseOrdersGetById } = useFetchPurchaseOrders();
@@ -39,6 +39,9 @@ const PurchaseOrdersEdit = () => {
     //func
     const handlePersistence = async (data) => {
         data.id = id;     
+
+        //console.log(data);
+
         await purchaseOrdersPatch(id, data);
         navigate("/PurchaseOrders");
     }

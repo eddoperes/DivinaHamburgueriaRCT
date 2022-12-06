@@ -1,10 +1,11 @@
 //react hooks
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef} from "react";
 
 //data hooks
 import { useFetchProviders } from "../../hooks/useFetchProviders";
 import { useFetchPurchaseOrders } from "../../hooks/useFetchPurchaseOrders";
+import { useFetchLocalStorage } from "../../hooks/useFetchLocalStorage";
 
 //icones
 import { VscNewFile } from 'react-icons/vsc';
@@ -22,22 +23,53 @@ const PurchaseOrdersList = () => {
     //ref
     const providerSelRef = useRef(null);
     const providerRdbRef = useRef(null);
+    const providerRdbQqRef = useRef(null);
 
     //data
-    const { data: providers, error: errorProviders, providersGetAll} = useFetchProviders();    
+    const { data: providers, error: errorProviders, unauthorized: unauthorizedProviders, providersGetAll} = useFetchProviders();    
     if (providers === null) {
         setTimeout(() => {
             setShowWaitingProviders(true);
         }, 1000);
         providersGetAll();        
     }
-    const {data: items, error, purchaseOrdersGetByProvider} = useFetchPurchaseOrders();
+    const { data: items, error, purchaseOrdersGetByProvider, unauthorized: unauthorizedItem} = useFetchPurchaseOrders();
+    const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
     //init
-    useEffect(() => {   
-        if (providerRdbRef.current !== null)          
-            providerRdbRef.current.checked = true;
-    }, [providers]);
+    const navigate = useNavigate();
+
+    useEffect(() => {          
+
+        if (providerRdbRef.current !== null && 
+            providerRdbQqRef.current !== null){
+
+            setProviderId(localStorageGet("providerId"));
+
+            if (localStorageGet("providerIdChecked") === true){
+                providerRdbRef.current.checked = true;
+                providerSelRef.current.disabled = false;
+            }
+
+            if (localStorageGet("providerIdQqChecked") === true){
+                providerRdbQqRef.current.checked = true;
+                providerSelRef.current.disabled = true;
+            }
+
+            var sendProviderId = 0;
+            if (providerRdbRef.current.checked)
+                sendProviderId = providerId        
+            purchaseOrdersGetByProvider(sendProviderId);
+            
+        }
+            
+    }, [providers]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {          
+        if (unauthorizedItem || unauthorizedProviders){
+            navigate("/login");
+        }    
+    }, [unauthorizedItem, unauthorizedProviders]); // eslint-disable-line react-hooks/exhaustive-deps
 
     //func
     function GetProviderName(id){
@@ -69,9 +101,17 @@ const PurchaseOrdersList = () => {
         setTimeout(() => {
             setShowWaiting(true);
             setRefreshing(true);
-        }, 1000);        
-        await purchaseOrdersGetByProvider(providerId);
+        }, 1000); 
+
+        var sendProviderId = 0;
+        if (providerRdbRef.current.checked)
+             sendProviderId = providerId        
+        await purchaseOrdersGetByProvider(sendProviderId);
+
         setRefreshing(false);
+        localStorageSet("providerId", providerId);
+        localStorageSet("providerIdChecked", providerRdbRef.current.checked);
+        localStorageSet("providerIdQqChecked", providerRdbQqRef.current.checked);
     }
 
     return (
@@ -93,10 +133,7 @@ const PurchaseOrdersList = () => {
                                     <input type="radio" 
                                         ref={providerRdbRef}
                                         className="input-list"
-                                        onChange={(e) => {
-                                                            setProviderId(e.target.value);
-                                                            providerSelRef.current.disabled = false;
-                                                        }}                        
+                                        onChange={(e) => {providerSelRef.current.disabled = false;}}                        
                                         id="type" 
                                         name="type" 
                                         value={providers[0].id}  />
@@ -121,14 +158,12 @@ const PurchaseOrdersList = () => {
 
                                 <label>
                                     <input type="radio" 
-                                        className="input-list"
-                                        onChange={(e) => {
-                                                            setProviderId(e.target.value);
-                                                            providerSelRef.current.disabled = true;
-                                                        }}                        
-                                        id="type" 
-                                        name="type" 
-                                        value="0"  />
+                                           ref={providerRdbQqRef}
+                                           className="input-list"
+                                           onChange={(e) => {providerSelRef.current.disabled = true;}}                        
+                                           id="type" 
+                                           name="type" 
+                                           value="0"  />
                                     Qualquer
                                 </label>
 
@@ -176,9 +211,6 @@ const PurchaseOrdersList = () => {
                             <div>
                                 {GetProviderName(item.providerId)}
                             </div>                        
-                            <div>
-                            
-                            </div>
                             <div>
                                 {item.observation}                                           
                             </div>   

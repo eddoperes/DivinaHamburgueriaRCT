@@ -18,9 +18,9 @@ const PurchaseOrdersInventoryItems = ({inventoryItems, handleGetItem, number, it
   //init
   useEffect(() => {             
         if (item !== null && item !== undefined && 
-                inventoryItems !== null && inventoryItems !== undefined)
+            inventoryItems !== null && inventoryItems !== undefined)
         {  
-                setInventoryItemsId(item.inventoryItemsId);
+                setInventoryItemsId(item.inventoryItemId);
                 setUnitPrice(item.unitPrice);
                 setQuantity(item.quantity);
                 setTotalPrice(item.totalPrice);    

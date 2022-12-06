@@ -111,7 +111,7 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
         data.purchaseOrderInventoryItems.push(elements[i]());      
       }
     }
-    //handlePersistence(data)
+    handlePersistence(data)
   }
 
   function handleGetItem(number, getItem){
