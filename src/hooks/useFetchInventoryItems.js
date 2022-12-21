@@ -6,13 +6,17 @@ export const useFetchInventoryItems = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, 
+    const {data, error, unauthorized,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit,
            apiRemove} = useFetchApi();
 
     const inventoryItemsGetAll = async () => {
         await apiGetMany(`${url}/inventoryitems`);
+    }
+
+    const inventoryItemsGetDistinctNames = async () => {        
+        await apiGetMany(`${url}/inventoryitems/getdistinctnames`);
     }
 
     const inventoryItemsGetByNameAndOrType = async (name, type) => {
@@ -35,12 +39,13 @@ export const useFetchInventoryItems = () => {
         await apiRemove(`${url}/inventoryitems`, id);
     }
 
-    return {data, error, 
+    return {data, error, unauthorized,
             inventoryItemsGetAll, 
             inventoryItemsGetById, 
             inventoryItemsAdd, 
             inventoryItemsEdit, 
             inventoryItemsRemove,
-            inventoryItemsGetByNameAndOrType};
+            inventoryItemsGetByNameAndOrType,
+            inventoryItemsGetDistinctNames};
 
 }

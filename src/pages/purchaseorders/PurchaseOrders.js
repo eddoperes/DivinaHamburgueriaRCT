@@ -85,33 +85,21 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
 
   //func
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    //console.log("handleSubmit")
-
-    var data;
-    if (configure.showState)
-    {
-      data = {
-        state: state,
-        payment: payment
-      } 
-    }
-    else 
-    {
-      data = {
+    e.preventDefault();    
+    var data = {
         providerId : providerId,
         observation : observation,
         total : total,
-        state: 1,
-        payment: 1,
+        state: state,
+        payment: payment,
         purchaseOrderInventoryItems: []
       } 
-      for (var i=0; i < elements.length; i++){
-        data.purchaseOrderInventoryItems.push(elements[i]());      
-      }
+    for (var i=0; i < elements.length; i++){
+      var item = elements[i]();
+      if (item !== null)
+        data.purchaseOrderInventoryItems.push(item);      
     }
-    //handlePersistence(data)
+    handlePersistence(data)
   }
 
   function handleGetItem(number, getItem){
@@ -259,50 +247,7 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
 
             </div>
           </div>
-
-          {configure.showState &&
-            <div>
-
-              <label > Estado
-                <select value={state}
-                        className="select-edit"                    
-                        onChange={(e) => setState(e.target.value)}                
-                >                
-                        <option value="1">
-                            Cotação
-                        </option> 
-                        <option value="2">
-                            Emitido
-                        </option> 
-                        <option value="3">
-                            Cancelado
-                        </option>
-                        <option value="4">
-                            Entregue
-                        </option>
-                        <option value="5">
-                            Estocado
-                        </option>                                 
-                </select>          
-              </label>
-
-              <label > Pagamento
-                <select value={payment}
-                        className="select-edit"                    
-                        onChange={(e) => setPayment(e.target.value)}                
-                >                
-                        <option value="1">
-                            Aberto
-                        </option> 
-                        <option value="2">
-                            Pago
-                        </option>                                                      
-                </select>          
-              </label>
-
-            </div>
-          }
-
+        
           <div>
             <input type="submit"                    
                    value="Enviar"

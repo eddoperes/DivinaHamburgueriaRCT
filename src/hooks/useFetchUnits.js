@@ -6,7 +6,7 @@ export const useFetchUnits = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, 
+    const {data, error, unauthorized,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit,
            apiRemove} = useFetchApi();
@@ -31,7 +31,7 @@ export const useFetchUnits = () => {
         await apiRemove(`${url}/units`, id);
     }
 
-    return {data, error, 
+    return {data, error, unauthorized,
             unitsGetAll, 
             unitsGetById, 
             unitsAdd, 

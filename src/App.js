@@ -10,6 +10,11 @@ import PurchaseOrdersNew from './pages/purchaseorders/PurchaseOrdersNew';
 import PurchaseOrdersEdit from './pages/purchaseorders/PurchaseOrdersEdit';
 import PurchaseOrdersList from './pages/purchaseorders/PurchaseOrdersList';
 
+import InventoryEdit from './pages/inventories/InventoryEdit';
+import InventoryList from './pages/inventories/InventoryList';
+
+import Login from './pages/login/Login';
+
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 
 import MainContextProvider from './contexts/MainContext'
@@ -34,6 +39,11 @@ function App() {
             <Route path="/PurchaseOrders" element={<PurchaseOrdersList/>} />
             <Route path="/PurchaseOrders/New" element={<PurchaseOrdersNew/>} />
             <Route path="/PurchaseOrders/Edit/:id" element={<PurchaseOrdersEdit/>} />
+
+            <Route path="/Inventories/Edit/:id" element={<InventoryEdit/>} />
+            <Route path="/Inventories" element={<InventoryList/>} />
+
+            <Route path="/Login" element={<Login/>} />
 
           </Routes>
         </BrowserRouter>
