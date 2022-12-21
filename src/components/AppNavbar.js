@@ -1,13 +1,43 @@
 import './AppNavBar.css';
-import React from 'react'
-import {Link} from 'react-router-dom';
 
+//react hooks
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+
+//icons
 import { AiFillHome } from 'react-icons/ai';
 import { FaUserAlt, FaBinoculars } from 'react-icons/fa';
 import { BsFillCartFill } from 'react-icons/bs';
 import { MdFastfood } from 'react-icons/md';
 
+//data hooks
+import { useFetchLocalStorage } from "../hooks/useFetchLocalStorage";
+
 const AppNavbar = () => {
+
+  //state
+  const [hasToken, setHasToken] = useState(false);
+
+  //data
+  const { get: localStorageGet, set: localStorageSet } = useFetchLocalStorage();
+
+  //init
+  const navigate = useNavigate();
+
+  useEffect(() => {   
+    var token = localStorageGet("token");
+    if (token !== "")
+      setHasToken(true);
+    else
+      setHasToken(false);
+  }, [localStorageGet]); 
+
+  //func
+  const handleLogout = async(e) => {  
+    localStorageSet("token","");
+    navigate("/"); 
+  }
+
   return (
     <div className="navbar">
     
@@ -53,10 +83,21 @@ const AppNavbar = () => {
         </div>        
       </div> 
       
-      <Link to={'/login'}>
-        <FaUserAlt className="icon"/> 
-        Login
-      </Link> 
+      {!hasToken &&
+        <Link to={'/login'}>
+          <FaUserAlt className="icon"/> 
+          Login
+        </Link> 
+      }
+
+      {hasToken &&
+        <div id="#1">
+          <a href="#1" onClick={(e) => handleLogout(e)}>
+            <FaUserAlt className="icon"/> 
+            Sair
+          </a>
+        </div>
+      }
 
     </div>    
   )

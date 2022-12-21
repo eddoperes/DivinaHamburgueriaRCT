@@ -1,0 +1,18 @@
+.box{
+    width: 20%;
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 0.5rem;
+    border: black solid 1px;
+    position: absolute;
+    top: 80px;
+    left: 80px;
+}
+
+.message{
+    margin: 0.2rem;
+}
+
+.button{
+    margin: 0.2rem;
+}

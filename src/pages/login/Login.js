@@ -57,13 +57,6 @@ const Login = () => {
 
       <h1 className='h1-edit'>Login</h1>
 
-      {(!loginData && !loginError && showWaiting) && 
-        <p className='waiting-icon-edit'><BsHourglassSplit/></p>
-      }  
-      {loginError && 
-        <p className='error-message-edit'>{loginError}</p>
-      } 
-
       <form onSubmit={handleSubmit} className="form-edit">
 
         <label>E-mail
@@ -100,14 +93,21 @@ const Login = () => {
 
         <div>
           <input type="submit" 
-                value="Enviar"
-                className="input-edit-submit"
+                 value="Enviar"
+                 className="input-edit-submit"
           />
           <div className="clear-both">
           </div>
         </div>
 
       </form>
+
+      {(!loginData && !loginError && showWaiting) && 
+        <p className='waiting-icon-edit'><BsHourglassSplit/></p>
+      }  
+      {loginError && 
+        <p className='error-message-edit'>{loginError}</p>
+      } 
 
     </div>
 

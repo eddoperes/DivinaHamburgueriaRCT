@@ -4,12 +4,12 @@
 }
 
 .select-edit-inventory-item{
-    width: 22%;
+    width: 21%;
 }
 
 .input-edit-text-inventory-item,
 .input-edit-number-inventory-item{
-    width: 22%;
+    width: 21%;
 }
 
 .input-edit-number-inventory-item{
@@ -27,4 +27,35 @@
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: wrap;
+}
+
+.button-remove-list-inventory-item{
+    border: 0.5px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    background-color: #990000;
+    width: 40px;
+    height: 22px;    
+}
+
+.button-remove-list-inventory-item:disabled{
+    background-color: #cccccc;   
+}
+
+.button-remove-list-inventory-item:hover{
+    background-color: #770000;   
+}
+
+.button-remove-list-inventory-item:disabled:hover{
+    background-color: #cccccc;   
+}
+
+.space-remove-list-inventory-item{
+    width: 40px;
+}
+
+
+.icon-size-inventory-item{
+  font-size: medium;
 }

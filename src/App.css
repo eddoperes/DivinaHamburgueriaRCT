@@ -292,6 +292,38 @@
   background-color: #007700;
 }
 
+.button-payment-list{
+  border: 0.5px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: larger;
+  color: white;
+  background-color: #009999;
+  width: 40px;
+  height: 40px;
+  margin: .2rem;
+}
+
+.button-payment-list:hover{
+  background-color: #007777;
+}
+
+.button-progress-list{
+  border: 0.5px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: larger;
+  color: white;
+  background-color: #999900;
+  width: 40px;
+  height: 40px;
+  margin: .2rem;
+}
+
+.button-progress-list:hover{
+  background-color: #777700;
+}
+
 .button-remove-list{
   border: 0.5px solid black;
   border-radius: 5px;

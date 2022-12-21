@@ -18,6 +18,7 @@ const InventoryItems = ({handlePersistence, item, configure}) => {
   const [unidadeId, setUnidadeId] = useState(1);
   const [type, setType] = useState(1); 
   const [showWaiting, setShowWaiting] = useState(false);
+  //const [accordionPanelStyle, setAccordionPanelStyle] = useState({});
 
   //ref
   const inputRef = useRef(null);
@@ -42,6 +43,8 @@ const InventoryItems = ({handlePersistence, item, configure}) => {
         setUnidadeId(item.unityId);
         setType(item.type);                 
     }
+    //setAccordionPanelStyle({display:'block'});
+    //style={accordionPanelStyle}
     setTimeout(() => {
       if (inputRef.current !== null){              
         AccordionOpen(inputRef.current);    
@@ -136,7 +139,7 @@ const InventoryItems = ({handlePersistence, item, configure}) => {
               <BiDownArrow className='accordion-down'/>
               <BiUpArrow className='accordion-up'/>
             </button>
-            <div className="accordion-panel">
+            <div className="accordion-panel" >              
               <label htmlFor="marca">Marca
                 <input type="text"
                     className='input-edit input-edit-text'

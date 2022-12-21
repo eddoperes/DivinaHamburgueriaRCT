@@ -15,6 +15,10 @@ export const useFetchInventories = () => {
         await apiGetMany(`${url}/inventories`);
     }
 
+    const inventoryGetByEatable = async (eatableid) => {
+        await apiGetMany(`${url}/inventories/getbyeatable?eatableid=${eatableid}`);
+    }
+
     const inventoryGetById = async (id) => {
         await apiGetById(`${url}/inventories`, id);
     }
@@ -33,6 +37,7 @@ export const useFetchInventories = () => {
 
     return {data, error, unauthorized,
             inventoryGetAll, 
+            inventoryGetByEatable,
             inventoryGetById, 
             inventoryAdd, 
             inventoryEdit, 

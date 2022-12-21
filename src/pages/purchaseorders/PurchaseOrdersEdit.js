@@ -21,6 +21,7 @@ const PurchaseOrdersEdit = () => {
     const { data: item,
             error: errorItem, 
             purchaseOrdersPatch,
+            purchaseOrdersEdit,
             purchaseOrdersGetById } = useFetchPurchaseOrders();
     if (item === null) {purchaseOrdersGetById(id)};
 
@@ -28,7 +29,7 @@ const PurchaseOrdersEdit = () => {
     const navigate = useNavigate();
 
     const configure = {
-        disableInputs: true,
+        disableInputs: false,
         showState: true
     }
 
@@ -42,13 +43,14 @@ const PurchaseOrdersEdit = () => {
 
         //console.log(data);
 
-        await purchaseOrdersPatch(id, data);
+        //await purchaseOrdersPatch(id, data);
+        await purchaseOrdersEdit(id, data);
         navigate("/PurchaseOrders");
     }
 
     return (
         <div>
-            <h1 className='h1-edit'>Visualizar ordem de compra</h1>
+            <h1 className='h1-edit'>Editar ordem de compra</h1>
             {(!item && !errorItem && showWaiting) && 
                 <p className='waiting-icon-edit'><BsHourglassSplit/></p>
             } 
