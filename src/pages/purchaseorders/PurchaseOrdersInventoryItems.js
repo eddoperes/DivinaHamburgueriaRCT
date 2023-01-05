@@ -23,7 +23,6 @@ const PurchaseOrdersInventoryItems = ({inventoryItems, handleGetItem, number, it
   //init
   handleGetItem(number, getItem)
 
-  //init
   useEffect(() => {             
         if (item !== null && item !== undefined && 
             inventoryItems !== null && inventoryItems !== undefined)

@@ -104,6 +104,8 @@ const InventoryList = () => {
 
     function GetInventoryItemContent(id){
         var inventoryItem = inventoryItems.filter(i => i.id === id)[0];
+        if (inventoryItem === null || inventoryItem === undefined)
+            return "";
         var unit = units.filter(u => u.id === inventoryItem.unityId)[0];
         return inventoryItem.content + ' ' + unit.name;
     }
