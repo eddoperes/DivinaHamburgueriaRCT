@@ -13,6 +13,16 @@ import PurchaseOrdersList from './pages/purchaseorders/PurchaseOrdersList';
 import InventoryEdit from './pages/inventories/InventoryEdit';
 import InventoryList from './pages/inventories/InventoryList';
 
+import MenuItemsRecipeNew from './pages/menuitemsrecipe/MenuItemsRecipeNew';
+import MenuItemsRecipeEdit from './pages/menuitemsrecipe/MenuItemsRecipeEdit';
+import MenuItemsRecipeRemove from './pages/menuitemsrecipe/MenuItemsRecipeRemove';
+import MenuItemsRecipeList from './pages/menuitemsrecipe/MenuItemsRecipeList';
+
+import MenuItemsResaleNew from './pages/menuitemsresale/MenuItemsResaleNew';
+import MenuItemsResaleEdit from './pages/menuitemsresale/MenuItemsResaleEdit';
+import MenuItemsResaleRemove from './pages/menuitemsresale/MenuItemsResaleRemove';
+import MenuItemsResaleList from './pages/menuitemsresale/MenuItemsResaleList';
+
 import Login from './pages/login/Login';
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
@@ -44,6 +54,16 @@ function App() {
             <Route path="/Inventories" element={<InventoryList/>} />
 
             <Route path="/Login" element={<Login/>} />
+
+            <Route path="/MenuItemsRecipe" element={<MenuItemsRecipeList/>} />
+            <Route path="/MenuItemsRecipe/New" element={<MenuItemsRecipeNew/>} />
+            <Route path="/MenuItemsRecipe/Edit/:id" element={<MenuItemsRecipeEdit/>} />
+            <Route path="/MenuItemsRecipe/Remove/:id" element={<MenuItemsRecipeRemove/>} />
+
+            <Route path="/MenuItemsResale" element={<MenuItemsResaleList/>} />
+            <Route path="/MenuItemsResale/New" element={<MenuItemsResaleNew/>} />
+            <Route path="/MenuItemsResale/Edit/:id" element={<MenuItemsResaleEdit/>} />
+            <Route path="/MenuItemsResale/Remove/:id" element={<MenuItemsResaleRemove/>} />
 
           </Routes>
         </BrowserRouter>

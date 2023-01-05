@@ -98,6 +98,14 @@
   border: 1px solid #007700;
 }
 
+.input-edit-submit:disabled{
+  background-color: #ccc;
+}
+
+.input-edit-submit:disabled:hover{
+  background-color: #ccc;
+}
+
 .input-edit-submit:hover{
   background-color: #007700;
 }

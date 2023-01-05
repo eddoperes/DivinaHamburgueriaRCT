@@ -300,6 +300,6 @@ const InventoryItemsList = () => {
         </div>
     );
 
-};
+}
 
 export default InventoryItemsList;

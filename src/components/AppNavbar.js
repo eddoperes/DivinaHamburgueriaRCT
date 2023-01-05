@@ -52,7 +52,8 @@ const AppNavbar = () => {
           Pedidos
         </button>
         <div className="dropdown-content">
-          <Link to={'/'}>Itens do cardápio</Link>
+          <Link to={'/MenuItemsRecipe'}>Itens do cardápio receita</Link>
+          <Link to={'/MenuItemsResale'}>Itens do cardápio revenda</Link>
           <Link to={'/'}>Cardápios</Link>
           <hr />
           <Link to={'/'}>Pedidos salão</Link>
