@@ -43,15 +43,12 @@ const InventoryItems = ({handlePersistence, item, configure}) => {
         setUnidadeId(item.unityId);
         setType(item.type);                 
     }
-    //setAccordionPanelStyle({display:'block'});
-    //style={accordionPanelStyle}
     setTimeout(() => {
       if (inputRef.current !== null){              
         AccordionOpen(inputRef.current);    
       }
     }, 200); 
   }, [item]);
-
 
   //func
   const handleResetTextValidation = async (e) => {

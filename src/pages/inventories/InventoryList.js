@@ -65,6 +65,15 @@ const InventoryList = () => {
             if (eatableId === localStorageGet("eatableId"))
                 return;
 
+            if(localStorageGet("eatableIdChecked") === "" &&
+               localStorageGet("eatableIdQqChecked") === "")
+             {
+                 localStorageSet("eatableIdQqChecked", true);
+                 eatableRdbQqRef.current.checked = true;
+                 eatableSelRef.current.disabled = true;                 
+                 return;
+             }     
+
             setEatableId(localStorageGet("eatableId"));
             if (localStorageGet("eatableIdChecked") === true){
                 eatableRdbRef.current.checked = true;
@@ -73,9 +82,6 @@ const InventoryList = () => {
             if (localStorageGet("eatableIdQqChecked") === true){
                 eatableRdbQqRef.current.checked = true;
                 eatableSelRef.current.disabled = true;
-            }
-            else {
-                eatableRdbRef.current.checked = true;
             }
 
             var sendEatableId = 0;

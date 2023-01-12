@@ -1,0 +1,64 @@
+.input-edit-menu-menu-item, 
+.select-edit-menu-menu-item{    
+    margin-bottom: 1px;
+}
+
+.select-edit-menu-menu-item{
+    width: 27%;
+}
+
+.check-edit-menu-menu-item{
+    width: 15%;
+}
+
+.input-edit-text-menu-menu-item,
+.input-edit-number-menu-menu-item{
+    width: 27%;
+}
+
+.input-edit-number-menu-menu-item{
+    text-align: right;
+}
+
+.input-edit-text-menu-menu-item:invalid,
+.input-edit-number-menu-menu-item:invalid{
+    background-color: #fffafa;
+    border-color: red;
+}
+
+.menu-menu-item-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.button-remove-list-menu-menu-item{
+    border: 0.5px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    background-color: #990000;
+    width: 40px;
+    height: 22px;    
+}
+
+.button-remove-list-menu-menu-item:disabled{
+    background-color: #cccccc;   
+}
+
+.button-remove-list-menu-menu-item:hover{
+    background-color: #770000;   
+}
+
+.button-remove-list-menu-menu-item:disabled:hover{
+    background-color: #cccccc;   
+}
+
+.space-remove-list-menu-menu-item{
+    width: 40px;
+}
+
+.icon-size-menu-menu-item{
+  font-size: medium;
+}

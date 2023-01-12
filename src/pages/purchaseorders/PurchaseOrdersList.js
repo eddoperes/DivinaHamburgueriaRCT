@@ -55,6 +55,15 @@ const PurchaseOrdersList = () => {
             if (providerId === localStorageGet("providerId"))
                 return;
 
+            if(localStorageGet("providerIdChecked") === "" &&
+               localStorageGet("providerIdQqChecked") === "")
+            {
+                localStorageSet("providerIdQqChecked", true);
+                providerRdbQqRef.current.checked = true;
+                providerSelRef.current.disabled = true;                
+                return;
+            }     
+
             setProviderId(localStorageGet("providerId"));            
             if (localStorageGet("providerIdChecked") === true){
                 providerRdbRef.current.checked = true;
@@ -63,10 +72,7 @@ const PurchaseOrdersList = () => {
             if (localStorageGet("providerIdQqChecked") === true){
                 providerRdbQqRef.current.checked = true;
                 providerSelRef.current.disabled = true;
-            }
-            else{
-                providerRdbRef.current.checked = true;
-            }
+            }           
 
             var sendProviderId = 0;
             if (providerRdbRef.current.checked)
@@ -130,7 +136,7 @@ const PurchaseOrdersList = () => {
 
         var sendProviderId = 0;
         if (providerRdbRef.current.checked)
-             sendProviderId = providerId        
+             sendProviderId = providerId                      
         await purchaseOrdersGetByProvider(sendProviderId);
 
         setRefreshing(false);

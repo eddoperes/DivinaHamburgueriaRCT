@@ -4,7 +4,7 @@ import { MainContext } from '../contexts/MainContext'
 import { Mutex } from 'async-mutex';
 import { withTimeout } from 'async-mutex';
 
-export const useFetchMenuItemsResale = () => {
+export const useFetchMenus = () => {
 
     const [executing, setExecuting] = useState(false);
     const mutexWithTimeout = withTimeout(new Mutex(), 10);
@@ -17,18 +17,18 @@ export const useFetchMenuItemsResale = () => {
            apiAdd, apiEdit,
            apiRemove} = useFetchApi();
 
-    const menuItemsResaleGetAll = async () => {
-        await apiGetMany(`${url}/menuitemsResale`);
+    const menusGetAll = async () => {
+        await apiGetMany(`${url}/menus`);
     }
 
-    const menuItemsResaleGetByName = async (name) => {                        
+    const menusGetByName = async (name) => {                        
         if (executing)
             return;
         setExecuting(true);
         try {
             await mutexWithTimeout.runExclusive(async () => {              
                 // Dispatch the network request
-                await apiGetMany(`${url}/menuitemsResale/getbyname?name=${name}`);
+                await apiGetMany(`${url}/menus/getbyname?name=${name}`);
                 setExecuting(false);   
             });
         } catch (e) {                      
@@ -39,28 +39,28 @@ export const useFetchMenuItemsResale = () => {
         }
     }
 
-    const menuItemsResaleGetById = async (id) => {
-        await apiGetById(`${url}/menuitemsResale`, id);
+    const menusGetById = async (id) => {
+        await apiGetById(`${url}/menus`, id);
     }
 
-    const menuItemsResaleAdd = async (data) => {
-        await apiAdd(`${url}/menuitemsResale`, data);
+    const menusAdd = async (data) => {
+        await apiAdd(`${url}/menus`, data);
     }
 
-    const menuItemsResaleEdit = async (id, data) => {
-        await apiEdit(`${url}/menuitemsResale`, id, data);
+    const menusEdit = async (id, data) => {
+        await apiEdit(`${url}/menus`, id, data);
     }
 
-    const menuItemsResaleRemove = async (id) => {
-        await apiRemove(`${url}/menuitemsResale`, id);
+    const menusRemove = async (id) => {
+        await apiRemove(`${url}/menus`, id);
     }
 
     return {data, error, unauthorized, executing,
-            menuItemsResaleGetAll, 
-            menuItemsResaleGetByName,
-            menuItemsResaleGetById, 
-            menuItemsResaleAdd, 
-            menuItemsResaleEdit, 
-            menuItemsResaleRemove};
+            menusGetAll, 
+            menusGetByName,
+            menusGetById, 
+            menusAdd, 
+            menusEdit, 
+            menusRemove};
 
 }

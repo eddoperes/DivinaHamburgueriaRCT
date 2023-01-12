@@ -49,8 +49,23 @@ const InventoryItemsList = () => {
             items === null){
 
                 if (name === localStorageGet("name") && 
+                    name !== "" &&
                     type === localStorageGet("type"))
                     return;
+
+                if(localStorageGet("nameChecked") === "" &&
+                   localStorageGet("nameQQChecked") === "" &&
+                   localStorageGet("typeChecked") === "" &&
+                   localStorageGet("typeQqChecked") === "")
+                {
+                    localStorageSet("nameQqChecked", true);
+                    nameRdbQqRef.current.checked = true;
+                    nameTxtRef.current.disabled = true;
+                    localStorageSet("typeQqChecked", true);
+                    typeRdbQqRef.current.checked = true;
+                    typeSelRef.current.disabled = true;
+                    return;
+                }                                                     
 
                 setName(localStorageGet("name"));
                 if (localStorageGet("nameChecked") === true){
@@ -61,9 +76,6 @@ const InventoryItemsList = () => {
                     nameRdbQqRef.current.checked = true;
                     nameTxtRef.current.disabled = true;
                 }
-                else {
-                    nameRdbRef.current.checked = true;
-                }
 
                 setType(localStorageGet("type"));
                 if (localStorageGet("typeChecked") === true){
@@ -73,9 +85,6 @@ const InventoryItemsList = () => {
                 if (localStorageGet("typeQqChecked") === true){
                     typeRdbQqRef.current.checked = true;
                     typeSelRef.current.disabled = true;
-                }
-                else {
-                    typeRdbRef.current.checked = true;
                 }
 
                 var sendName = "";
@@ -94,7 +103,6 @@ const InventoryItemsList = () => {
             navigate("/login");
         }    
     }, [unauthorizedItem, unauthorizedUnits]); // eslint-disable-line react-hooks/exhaustive-deps
-
 
     //func
     function GetUnitName(id){

@@ -1,35 +1,34 @@
 //form component
-import PurchaseOrders from './PurchaseOrders';
+import Menus from './Menus';
 
 //react hooks
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 //data hooks
-import { useFetchPurchaseOrders } from "../../hooks/useFetchPurchaseOrders";
+import { useFetchMenus } from "../../hooks/useFetchMenus";
 
 //icons
 import { BsHourglassSplit } from 'react-icons/bs';
 
-const PurchaseOrdersEdit = () => {
+const MenusEdit = () => {
 
     //state
     const [showWaiting, setShowWaiting] = useState(false);
 
     //data
     const { id } = useParams();
-    const { data: item,
+    const { data: item, 
             error: errorItem, 
-            purchaseOrdersEdit,
-            purchaseOrdersGetById } = useFetchPurchaseOrders();
-    if (item === null) {purchaseOrdersGetById(id)};
+            menusGetById, 
+            menusEdit } = useFetchMenus();
+    if (item === null) {menusGetById(id)};
 
     //init
     const navigate = useNavigate();
 
     const configure = {
         disableInputs: false,
-        showState: true
     }
 
     setTimeout(() => {
@@ -39,17 +38,13 @@ const PurchaseOrdersEdit = () => {
     //func
     const handlePersistence = async (data) => {
         data.id = id;     
-
-        //console.log(data);
-
-        //await purchaseOrdersPatch(id, data);
-        await purchaseOrdersEdit(id, data);
-        navigate("/PurchaseOrders");
+        await menusEdit(id, data);
+        navigate("/Menus");
     }
 
-    return (
+    return(
         <div>
-            <h1 className='h1-edit'>Editar ordem de compra</h1>
+            <h1 className='h1-edit'>Editar cardápio</h1>
             {(!item && !errorItem && showWaiting) && 
                 <p className='waiting-icon-edit'><BsHourglassSplit/></p>
             } 
@@ -57,14 +52,14 @@ const PurchaseOrdersEdit = () => {
                 <p className='error-message-edit'>{errorItem}</p>
             }
             {item &&
-                <PurchaseOrders handlePersistence={handlePersistence} 
-                                item={item} 
-                                configure={configure}>                                
-                </PurchaseOrders>
+                <Menus handlePersistence={handlePersistence} 
+                       item={item} 
+                       configure={configure}>                                
+                </Menus>
             }
         </div>
-    )
+    );
 
-}
+};
 
-export default PurchaseOrdersEdit
+export default MenusEdit;

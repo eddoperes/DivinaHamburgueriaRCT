@@ -2,7 +2,7 @@ import { useFetchApi } from './useFetchApi';
 import { useContext, useState } from "react";
 import { MainContext } from '../contexts/MainContext'
 import { Mutex } from 'async-mutex';
-import { withTimeout, E_TIMEOUT } from 'async-mutex';
+import { withTimeout } from 'async-mutex';
 
 export const useFetchMenuItemsRecipe = () => {
 
