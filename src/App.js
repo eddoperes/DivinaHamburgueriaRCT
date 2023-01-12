@@ -23,6 +23,11 @@ import MenuItemsResaleEdit from './pages/menuitemsresale/MenuItemsResaleEdit';
 import MenuItemsResaleRemove from './pages/menuitemsresale/MenuItemsResaleRemove';
 import MenuItemsResaleList from './pages/menuitemsresale/MenuItemsResaleList';
 
+import MenusNew from './pages/menus/MenusNew';
+import MenusEdit from './pages/menus/MenusEdit';
+import MenusRemove from './pages/menus/MenusRemove';
+import MenusList from './pages/menus/MenusList';
+
 import Login from './pages/login/Login';
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
@@ -64,6 +69,11 @@ function App() {
             <Route path="/MenuItemsResale/New" element={<MenuItemsResaleNew/>} />
             <Route path="/MenuItemsResale/Edit/:id" element={<MenuItemsResaleEdit/>} />
             <Route path="/MenuItemsResale/Remove/:id" element={<MenuItemsResaleRemove/>} />
+
+            <Route path="/Menus" element={<MenusList/>} />
+            <Route path="/Menus/New" element={<MenusNew/>} />
+            <Route path="/Menus/Edit/:id" element={<MenusEdit/>} />
+            <Route path="/Menus/Remove/:id" element={<MenusRemove/>} />
 
           </Routes>
         </BrowserRouter>

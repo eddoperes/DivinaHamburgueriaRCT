@@ -29,7 +29,7 @@ const Login = () => {
       localStorageSet("token", loginData.token); 
       navigate("/");                 
     } 
-  }, [loginData]);
+  }, [loginData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //func
   const handleResetTextValidation = async (e) => {

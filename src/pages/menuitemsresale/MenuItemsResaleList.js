@@ -34,6 +34,18 @@ const MenuItemsResaleList = () => {
 
     if (items === null){
 
+        if (name === localStorageGet("nameresale") &&
+            name !== "")
+            return;
+
+        if (localStorageGet("nameresaleChecked") === "" &&
+            localStorageGet("nameresaleQqChecked") === ""){
+                localStorageSet("nameresaleQqChecked", true);
+                nameRdbQqRef.current.checked = true;
+                nameTxtRef.current.disabled = true;
+                return; 
+        }
+
         setName(localStorageGet("nameresale"));
         if (localStorageGet("nameresaleChecked") === true){
             nameRdbRef.current.checked = true;
@@ -43,13 +55,6 @@ const MenuItemsResaleList = () => {
             nameRdbQqRef.current.checked = true;
             nameTxtRef.current.disabled = true;
         }           
-
-        if (localStorageGet("nameresaleChecked") === "" &&
-            localStorageGet("nameresaleQqChecked") === ""){
-            nameRdbRef.current.checked = true;
-            nameTxtRef.current.disabled = false;
-            return; 
-        }
 
         var sendName = "";
         if (nameRdbRef.current.checked)
