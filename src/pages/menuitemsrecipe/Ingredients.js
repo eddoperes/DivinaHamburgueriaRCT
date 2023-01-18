@@ -1,4 +1,4 @@
-import './Ingredient.css';
+import './Ingredients.css';
 
 //react hooks
 import React from 'react'
