@@ -69,6 +69,8 @@ const AppNavbar = () => {
           Estoques
         </button>
         <div className="dropdown-content">
+          <Link to={'/Providers'}>Fornecedores</Link>
+          <hr />
           <Link to={'/InventoryItems'}>Itens do estoque</Link>
           <Link to={'/PurchaseOrders'}>Pedidos compra</Link>
           <hr />
