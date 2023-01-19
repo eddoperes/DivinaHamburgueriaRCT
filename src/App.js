@@ -33,6 +33,11 @@ import CustomersEdit from './pages/customers/CustomersEdit';
 import CustomersRemove from './pages/customers/CustomersRemove';
 import CustomersList from './pages/customers/CustomersList';
 
+import ProvidersNew from './pages/providers/ProvidersNew';
+import ProvidersEdit from './pages/providers/ProvidersEdit';
+import ProvidersRemove from './pages/providers/ProvidersRemove';
+import ProvidersList from './pages/providers/ProvidersList';
+
 import Login from './pages/login/Login';
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
@@ -84,6 +89,11 @@ function App() {
             <Route path="/Customers/New" element={<CustomersNew/>} />
             <Route path="/Customers/Edit/:id" element={<CustomersEdit/>} />
             <Route path="/Customers/Remove/:id" element={<CustomersRemove/>} />
+
+            <Route path="/Providers" element={<ProvidersList/>} />
+            <Route path="/Providers/New" element={<ProvidersNew/>} />
+            <Route path="/Providers/Edit/:id" element={<ProvidersEdit/>} />
+            <Route path="/Providers/Remove/:id" element={<ProvidersRemove/>} />
 
           </Routes>
         </BrowserRouter>
