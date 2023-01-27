@@ -23,10 +23,10 @@ const Login = () => {
   //init
   const navigate = useNavigate();
 
-  useEffect(() => {                
+  useEffect(() => {                  
     if (loginData !== null)
     {                
-      localStorageSet("token", loginData.token); 
+      localStorageSet("token", loginData); 
       navigate("/");                 
     } 
   }, [loginData]); // eslint-disable-line react-hooks/exhaustive-deps

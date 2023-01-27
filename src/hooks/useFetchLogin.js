@@ -10,7 +10,7 @@ export const useFetchLogin = () => {
            apiAdd} = useFetchApi();
 
     const login = async (data) => {
-        await apiAdd(`${url}/Tokens/LoginUser`, data);
+        await apiAdd(`${url}/Logins/LoginUser`, data);
     }
 
     return {data, error, 

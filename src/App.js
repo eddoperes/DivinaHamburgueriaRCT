@@ -38,6 +38,15 @@ import ProvidersEdit from './pages/providers/ProvidersEdit';
 import ProvidersRemove from './pages/providers/ProvidersRemove';
 import ProvidersList from './pages/providers/ProvidersList';
 
+import UsersNew from './pages/users/UsersNew';
+import UsersEdit from './pages/users/UsersEdit';
+import UsersRemove from './pages/users/UsersRemove';
+import UsersList from './pages/users/UsersList';
+
+import HallOrdersNew from './pages/hallorders/HallOrdersNew';
+import HallOrdersEdit from './pages/hallorders/HallOrdersEdit';
+import HallOrdersList from './pages/hallorders/HallOrdersList';
+
 import Login from './pages/login/Login';
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
@@ -94,6 +103,15 @@ function App() {
             <Route path="/Providers/New" element={<ProvidersNew/>} />
             <Route path="/Providers/Edit/:id" element={<ProvidersEdit/>} />
             <Route path="/Providers/Remove/:id" element={<ProvidersRemove/>} />
+
+            <Route path="/Users" element={<UsersList/>} />
+            <Route path="/Users/New" element={<UsersNew/>} />
+            <Route path="/Users/Edit/:id" element={<UsersEdit/>} />
+            <Route path="/Users/Remove/:id" element={<UsersRemove/>} />
+
+            <Route path="/HallOrders" element={<HallOrdersList/>} />
+            <Route path="/HallOrders/New" element={<HallOrdersNew/>} />
+            <Route path="/HallOrders/Edit/:id" element={<HallOrdersEdit/>} />
 
           </Routes>
         </BrowserRouter>

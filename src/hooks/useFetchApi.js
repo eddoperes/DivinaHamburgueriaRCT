@@ -11,7 +11,7 @@ export const useFetchApi = () => {
         if (value === null)
             return "";
         else
-            return JSON.parse(value);
+            return JSON.parse(value).accessToken;
     }
 
     const apiGetMany = async (url) => {

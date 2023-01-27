@@ -58,7 +58,7 @@ const AppNavbar = () => {
           <Link to={'/MenuItemsResale'}>Itens do cardápio revenda</Link>
           <Link to={'/Menus'}>Cardápios</Link>
           <hr />
-          <Link to={'/'}>Pedidos salão</Link>
+          <Link to={'/HallOrders'}>Pedidos salão</Link>
           <Link to={'/'}>Pedidos delivery</Link>
         </div>        
       </div> 
@@ -88,21 +88,26 @@ const AppNavbar = () => {
         </div>        
       </div> 
       
-      {!hasToken &&
-        <Link to={'/login'}>
-          <FaUserAlt className="icon"/> 
+      <div className="dropdown">
+        <button className="dropbtn">           
+          <FaUserAlt className="icon"/>
           Login
-        </Link> 
-      }
-
-      {hasToken &&
-        <div id="#1">
-          <a href="#1" onClick={(e) => handleLogout(e)}>
-            <FaUserAlt className="icon"/> 
-            Sair
-          </a>
-        </div>
-      }
+        </button>
+        <div className="dropdown-content">
+          <Link to={'/Users'}>Usuários</Link>
+          <hr />
+          {!hasToken &&
+            <Link to={'/login'}>
+              Entrar
+            </Link> 
+          }
+          {hasToken &&
+            <a href="#1" onClick={(e) => handleLogout(e)}>
+              Sair
+            </a>
+          }
+        </div>                
+      </div> 
 
     </div>    
   )

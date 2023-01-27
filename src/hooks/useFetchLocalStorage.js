@@ -7,7 +7,7 @@ export const useFetchLocalStorage = () => {
 
     const get = (key) => {
         const value = window.localStorage.getItem(key);
-        if (value === null)
+        if (value === null )
             return "";
         else
             return JSON.parse(value);
