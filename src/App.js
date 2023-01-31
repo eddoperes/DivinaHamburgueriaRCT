@@ -47,6 +47,10 @@ import HallOrdersNew from './pages/hallorders/HallOrdersNew';
 import HallOrdersEdit from './pages/hallorders/HallOrdersEdit';
 import HallOrdersList from './pages/hallorders/HallOrdersList';
 
+import DeliveryOrdersNew from './pages/deliveryorders/DeliveryOrdersNew';
+import DeliveryOrdersEdit from './pages/deliveryorders/DeliveryOrdersEdit';
+import DeliveryOrdersList from './pages/deliveryorders/DeliveryOrdersList';
+
 import Login from './pages/login/Login';
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
@@ -112,6 +116,10 @@ function App() {
             <Route path="/HallOrders" element={<HallOrdersList/>} />
             <Route path="/HallOrders/New" element={<HallOrdersNew/>} />
             <Route path="/HallOrders/Edit/:id" element={<HallOrdersEdit/>} />
+
+            <Route path="/DeliveryOrders" element={<DeliveryOrdersList/>} />
+            <Route path="/DeliveryOrders/New" element={<DeliveryOrdersNew/>} />
+            <Route path="/DeliveryOrders/Edit/:id" element={<DeliveryOrdersEdit/>} />
 
           </Routes>
         </BrowserRouter>

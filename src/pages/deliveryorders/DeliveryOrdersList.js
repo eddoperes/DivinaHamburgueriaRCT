@@ -3,12 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef} from "react";
 
 //data hooks
-import { useFetchHallOrders } from "../../hooks/useFetchHallOrders";
+import { useFetchDeliveryOrders } from "../../hooks/useFetchDeliveryOrders";
 import { useFetchLocalStorage } from "../../hooks/useFetchLocalStorage";
 
 //icones
 import { VscNewFile } from 'react-icons/vsc';
-import { BsHourglassSplit } from 'react-icons/bs';
+import { BsHourglassSplit, BsCurrencyDollar } from 'react-icons/bs';
 import { AiFillEdit } from 'react-icons/ai';        
 import { GiCancel } from 'react-icons/gi';   
 import { GoArrowRight } from 'react-icons/go';  
@@ -16,12 +16,13 @@ import { GoArrowRight } from 'react-icons/go';
 //custom
 import AppMessageBox from '../../components/AppMessageBox';
      
-const HallOrdersList = () => {
+const DeliveryOrdersList = () => {
 
     //state
     const [code, setCode] = useState('');
     const [showWaiting, setShowWaiting] = useState(false);
     const [refreshing, setRefreshing] = useState(false);    
+    const [showConfirmPayment, setShowConfirmPayment] = useState([]);
     const [showConfirmCanceled, setShowConfirmCanceled] = useState([]);
     const [showConfirmProgress, setShowConfirmProgress] = useState([]);
 
@@ -31,7 +32,7 @@ const HallOrdersList = () => {
     const codeRdbQqRef = useRef(null);
 
     //data
-    const { data: items, error, hallOrdersGetByCode, hallOrdersPatch, unauthorized: unauthorizedItem} = useFetchHallOrders();
+    const { data: items, error, deliveryOrdersGetByCode, deliveryOrdersPatch, unauthorized: unauthorizedItem} = useFetchDeliveryOrders();
     const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
     //init
@@ -42,25 +43,25 @@ const HallOrdersList = () => {
         if (code === '' &&                         
             items === null){
 
-            if (code === localStorageGet("code") &&
+            if (code === localStorageGet("deliverycode") &&
                 code !== '')
                 return;            
 
-            if(localStorageGet("codeChecked") === "" &&
-               localStorageGet("codeQqChecked") === "")
+            if(localStorageGet("deliverycodeChecked") === "" &&
+               localStorageGet("deliverycodeQqChecked") === "")
             {
-                localStorageSet("codeQqChecked", true);
+                localStorageSet("deliverycodeQqChecked", true);
                 codeRdbQqRef.current.checked = true;
                 codeTxtRef.current.disabled = true;                
                 return;
             }     
 
-            setCode(localStorageGet("code"));            
-            if (localStorageGet("codeChecked") === true){
+            setCode(localStorageGet("deliverycode"));            
+            if (localStorageGet("deliverycodeChecked") === true){
                 codeRdbRef.current.checked = true;
                 codeTxtRef.current.disabled = false;
             }
-            if (localStorageGet("codeQqChecked") === true){
+            if (localStorageGet("deliverycodeQqChecked") === true){
                 codeRdbQqRef.current.checked = true;
                 codeTxtRef.current.disabled = true;
             }           
@@ -72,8 +73,8 @@ const HallOrdersList = () => {
 
             var sendCode = 0;
             if (codeRdbRef.current.checked)
-                sendCode = localStorageGet("code"); 
-            hallOrdersGetByCode(sendCode);
+                sendCode = localStorageGet("deliverycode"); 
+            deliveryOrdersGetByCode(sendCode);
             
         }
             
@@ -89,7 +90,13 @@ const HallOrdersList = () => {
     const stateEnum = {
         Issued: 1,
         Canceled: 2,
-        Served: 3
+        Packaged: 3,
+        Delivered: 4
+    };
+
+    const paymentEnum = {
+        Opened: 1,
+        Paid: 2
     };
 
     function GetStateDescription(number){
@@ -97,8 +104,17 @@ const HallOrdersList = () => {
             return "Emitido"
         else if (number === stateEnum.Canceled)
             return "Cancelado"
-        else if (number === stateEnum.Served)
-            return "Servido" 
+        else if (number === stateEnum.Packaged)
+            return "Empacotado" 
+        else if (number === stateEnum.Delivered)
+            return "Entregue" 
+    }
+
+    function GetPaymentDescription(number){
+        if (number === paymentEnum.Opened)
+            return "Aberto"
+        else if (number === paymentEnum.Paid)
+            return "Pago"
     }
 
     async function  handleSubmit(e){
@@ -111,15 +127,36 @@ const HallOrdersList = () => {
         var sendCode = 0;
         if (codeRdbRef.current.checked)
              sendCode = code                      
-        await hallOrdersGetByCode(sendCode);
+        await deliveryOrdersGetByCode(sendCode);
 
         setRefreshing(false);
-        localStorageSet("code", code);
-        localStorageSet("codeChecked", codeRdbRef.current.checked);
-        localStorageSet("codeQqChecked", codeRdbQqRef.current.checked);
+        localStorageSet("deliverycode", code);
+        localStorageSet("deliverycodeChecked", codeRdbRef.current.checked);
+        localStorageSet("deliverycodeQqChecked", codeRdbQqRef.current.checked);
     }
 
- 
+    async function handleRegisterPaymentMessageBox(showPointer){  
+        showConfirmPayment.push(showPointer);
+        setShowConfirmPayment(showConfirmPayment);
+    }
+
+    async function handleConfirmPayment(e, id, state, payment){
+        e.preventDefault();
+        showConfirmPayment[0](id, state, payment, 
+                              e.pageX, e.pageY, 'info',
+                              'Confirma o pagamento?');
+    }
+
+    async function handlePaymentConfirmed(id, state, payment){
+        var data = {
+            id: id,
+            state: state,
+            payment: paymentEnum.Paid
+        } 
+        await deliveryOrdersPatch(id, data);
+    }
+
+
     async function handleRegisterCanceledMessageBox(showPointer){        
         showConfirmCanceled.push(showPointer);
         setShowConfirmCanceled(showConfirmCanceled);
@@ -137,7 +174,7 @@ const HallOrdersList = () => {
             id: id,
             state: stateEnum.Canceled,
         } 
-        await hallOrdersPatch(id, data);
+        await deliveryOrdersPatch(id, data);
     }
 
     async function handleRegisterProgressMessageBox(showPointer){  
@@ -155,19 +192,21 @@ const HallOrdersList = () => {
     async function handleProgressConfirmed(id, state, payment){
         var newState = state;
         if (state === stateEnum.Issued)
-            newState = stateEnum.Served;
+            newState = stateEnum.Packaged;
+        else if (state === stateEnum.Packaged)
+            newState = stateEnum.Delivered;
         var data = {
             id: id,
             state: newState,
         } 
-        await hallOrdersPatch(id, data);
+        await deliveryOrdersPatch(id, data);
     }
 
     return (
         <div>
 
             <h1 className='h1-list'>
-                Pedidos salão
+                Pedidos delivery
             </h1> 
             
             <form className="form-list" onSubmit={handleSubmit}>
@@ -225,7 +264,7 @@ const HallOrdersList = () => {
             </form>
 
             <div className='button-new-list-container'>
-                <Link to={'/HallOrders/New'}>
+                <Link to={'/DeliveryOrders/New'}>
                     <button className='button-new-list'>
                         <VscNewFile/>
                     </button>                
@@ -239,6 +278,10 @@ const HallOrdersList = () => {
                 <p className='error-message-list'>{error}</p>
             }
 
+            <AppMessageBox handleConfirmed={handlePaymentConfirmed}
+                           handleRegister={handleRegisterPaymentMessageBox} 
+            >
+            </AppMessageBox>
 
             <AppMessageBox handleConfirmed={handleCanceledConfirmed}
                            handleRegister={handleRegisterCanceledMessageBox}
@@ -264,7 +307,7 @@ const HallOrdersList = () => {
                             {GetStateDescription(item.state)}                                           
                         </div> 
                         <div>
-                            {"Pago"}                                           
+                            {GetPaymentDescription(item.payment)}                                            
                         </div> 
                         <div>
                             {new Intl.NumberFormat('pt-BR', 
@@ -275,12 +318,16 @@ const HallOrdersList = () => {
                             ).format(item.total)}                            
                         </div> 
                         <div>
-                            <Link to={`/HallOrders/Edit/${item.id}`}>
+                            <Link to={`/DeliveryOrders/Edit/${item.id}`}>
                                 <button className='button-edit-list'>
                                     <AiFillEdit />
                                 </button>    
                             </Link> 
          
+                            <button className='button-payment-list' 
+                                    onClick={(e) => handleConfirmPayment(e, item.id, item.state, item.payment)}>
+                                <BsCurrencyDollar />
+                            </button>   
                             <button className='button-remove-list'
                                     onClick={(e) => handleConfirmCanceled(e, item.id, item.state, item.payment)}>
                                 <GiCancel />
@@ -301,4 +348,4 @@ const HallOrdersList = () => {
 
 }
 
-export default HallOrdersList
+export default DeliveryOrdersList

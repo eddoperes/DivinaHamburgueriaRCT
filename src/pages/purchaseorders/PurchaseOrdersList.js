@@ -132,6 +132,7 @@ const PurchaseOrdersList = () => {
         setTimeout(() => {
             setShowWaiting(true);
             setRefreshing(true);
+            console.log('passo8')
         }, 1000); 
 
         var sendProviderId = 0;
