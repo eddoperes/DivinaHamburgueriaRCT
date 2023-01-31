@@ -1,5 +1,5 @@
 //grid component
-import PurchaseOrdersInventoryItems from './PurchaseOrdersInventoryItems'
+import DeliveryOrdersMenuItems from './DeliveryOrdersMenuItems'
 
 //react hooks
 import React from "react";
@@ -8,17 +8,19 @@ import ReactDOM from 'react-dom/client'
 import { useState, useEffect, useRef } from "react";
 
 //data hooks
-import { useFetchProviders } from "../../hooks/useFetchProviders";
-import { useFetchInventoryItems } from "../../hooks/useFetchInventoryItems";
+import { useFetchCustomers } from "../../hooks/useFetchCustomers";
+import { useFetchMenuItemsRecipe } from "../../hooks/useFetchMenuItemsRecipe";
+import { useFetchMenuItemsResale } from "../../hooks/useFetchMenuItemsResale";
 
 //icons
 import { BsHourglassSplit } from 'react-icons/bs';
 import { BiDownArrow, BiUpArrow } from 'react-icons/bi';
 
-const PurchaseOrders = ({handlePersistence, item, configure}) => {
+const DeliveryOrders = ({handlePersistence, item, configure}) => {
 
   //state
-  const [providerId, setProviderId] = useState(1);
+  const [userId, setUserId] = useState(0);
+  const [customerId, setCustomerId] = useState('');
   const [observation, setObservation] = useState('');
   const [total, setTotal] = useState(0);
   const [state, setState] = useState(1);
@@ -31,39 +33,44 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
   const inputRef = useRef(null);
 
   //data
-  const { data: providers, 
-          error: errorProviders, 
-          providersGetAll } = useFetchProviders();  
-  if (providers === null) {providersGetAll()};  
-  const { data: inventoryItems, 
-          error: errorInventoryItems, 
-          inventoryItemsGetAll } = useFetchInventoryItems();  
-  if (inventoryItems === null) {inventoryItemsGetAll()};
+  const { data: customers, 
+          error: errorCustomers, 
+          customersGetAll } = useFetchCustomers();  
+  if (customers === null) {customersGetAll()};  
+  const { data: menuItemsRecipe, 
+          error: errorMenuItemsRecipe, 
+          menuItemsRecipeGetAll } = useFetchMenuItemsRecipe();  
+  if (menuItemsRecipe === null) {menuItemsRecipeGetAll()};
+  const { data: menuItemsResale, 
+          error: errorMenuItemsResale, 
+          menuItemsResaleGetAll } = useFetchMenuItemsResale();  
+  if (menuItemsResale === null) {menuItemsResaleGetAll()};
 
   //init
   useEffect(() => {        
     
     if (item !== null && item !== undefined && 
-        inventoryItems !== null && inventoryItems !== undefined)
+        menuItemsRecipe !== null && menuItemsRecipe !== undefined &&
+        menuItemsResale !== null && menuItemsResale !== undefined)
     {  
 
       if (total === 0){
 
-        setProviderId(item.providerId);
+        setCustomerId(item.customerId === null ? '' : item.customerId);
         setObservation(item.observation);
         setTotal(item.total);
         setState(item.state);
         setPayment(item.payment);
           
         const data = [...newItems];
-        for (var i=0; i < item.purchaseOrderInventoryItems.length; i++){             
+        for (var i=0; i < item.deliveryOrderMenuItems.length; i++){             
           data.push(data.length);            
         }
         setNewItems(data);
 
         setTimeout(() => {
-          for (var i=0; i < item.purchaseOrderInventoryItems.length; i++){               
-            popItem(i, item.purchaseOrderInventoryItems[i]);
+          for (var i=0; i < item.deliveryOrderMenuItems.length; i++){               
+            popItem(i, item.deliveryOrderMenuItems[i]);
           }          
         }, 200); 
 
@@ -76,31 +83,41 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
         AccordionOpen(inputRef.current);              
       }
     }, 200); 
+
+    setUserId(getUserId());
     
-  }, [item, inventoryItems]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [item, menuItemsRecipe, menuItemsResale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   setTimeout(() => {
       setShowWaiting(true);
   }, 1000);
 
   //func
+  const getUserId = () => {
+    const value = window.localStorage.getItem("token");
+    if (value === null)
+        return 0;
+    else
+        return JSON.parse(value).userId;
+  } 
+
   const handleSubmit = async (e) => {
     e.preventDefault();    
     var data = {
-        providerId : providerId,
+        userId: userId,
+        customerId : customerId === '' ? null : customerId,
         observation : observation,
         total : total,
         state: state,
         payment: payment,
-        purchaseOrderInventoryItems: []
-      } 
+        deliveryOrderMenuItems: []
+    } 
     for (var i=0; i < elements.length; i++){
       var item = elements[i]();
       if (item !== null)
-        data.purchaseOrderInventoryItems.push(item);      
-    }
-    console.log(data);
-    handlePersistence(data)
+        data.deliveryOrderMenuItems.push(item);      
+    }    
+    handlePersistence(data);
   }
 
   function handleGetItem(number, getItem){
@@ -150,10 +167,11 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
   const newItem = async (e) => {
     e.preventDefault();
     var root = ReactDOM.createRoot(document.getElementById(newItems.length - 1));    
+    var menuItems = menuItemsRecipe.concat(menuItemsResale);
     root.render(
       <div>    
         {
-          React.createElement(PurchaseOrdersInventoryItems, {inventoryItems, handleGetItem, number: newItems.length - 1, item: null, configure})
+          React.createElement(DeliveryOrdersMenuItems, {menuItems, handleGetItem, number: newItems.length - 1, item: null, configure})
         }        
       </div>
     );
@@ -164,10 +182,11 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
 
   const popItem = async(number, item) => {
     var root = ReactDOM.createRoot(document.getElementById(number));    
+    var menuItems = menuItemsRecipe.concat(menuItemsResale);
     root.render(
       <div>    
         {
-          React.createElement(PurchaseOrdersInventoryItems, {inventoryItems, handleGetItem, number, item, configure})
+          React.createElement(DeliveryOrdersMenuItems, {menuItems, handleGetItem, number, item, configure})
         }        
       </div>
     );
@@ -176,37 +195,59 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
   return (
     <div>
 
-      {(!inventoryItems && !errorInventoryItems && showWaiting) && 
+      {(!menuItemsRecipe && !errorMenuItemsRecipe && showWaiting) && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorInventoryItems && 
-        <p className='error-message-edit'>{errorInventoryItems}</p>
+      {errorMenuItemsRecipe && 
+        <p className='error-message-edit'>{errorMenuItemsRecipe}</p>
+      } 
+
+      {(!menuItemsResale && !errorMenuItemsResale && showWaiting) && 
+        <p className='waiting-icon-edit'><BsHourglassSplit/></p>
+      }  
+      {errorMenuItemsResale && 
+        <p className='error-message-edit'>{errorMenuItemsResale}</p>
       } 
       
-      {(!providers && !errorProviders && showWaiting) && 
+      {(!customers && !errorCustomers && showWaiting) && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorProviders &&  
-        <p className='error-message-edit'>{errorProviders}</p>
+      {errorCustomers &&  
+        <p className='error-message-edit'>{errorCustomers}</p>
       } 
-      {providers && inventoryItems &&
+      {customers && menuItemsRecipe && menuItemsResale &&
         <form onSubmit={handleSubmit} className="form-edit">
 
-          <label > Fornecedor          
-            <select value={providerId}
-                    className="select-edit"
-                    disabled={configure.disableInputs}
-                    onChange={(e) => setProviderId(e.target.value)}                
+          {item &&
+            <label>Código
+              <input type="number"
+                     className='input-edit input-edit-number'
+                     value={item.id}  
+                     disabled={configure.disableInputs}
+                     readOnly
+              />
+            </label>
+          }
+
+          <label>Cliente
+            <select value={customerId}
+                    className="select-edit input-edit-number"
+                    onChange={(e) => setCustomerId(e.target.value)}   
+                    required            
             >
-                {providers.map((provider) => (
-                    <option key={provider.id} value={provider.id}>
-                        {provider.name}
+                <option key={undefined} value="">
+                        {'...'}
+                </option>
+                {customers.map((customer) => (
+                    <option key={customer.id} value={customer.id}>
+                        {customer.name}
                     </option>                   
                 ))}
             </select>          
           </label>
 
-          <label > Observação          
+
+          <label>Observação          
             <textarea value={observation}
                       className="textarea-edit"
                       disabled={configure.disableInputs}
@@ -217,12 +258,11 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
 
           <label>Total
             <input type="number"
-                  className='input-edit input-edit-number'
-                  placeholder="Total"
-                  value={total}  
-                  disabled={configure.disableInputs}
-                  onChange={(e) => setTotal(e.target.value)} 
-                  min={1}
+                   className='input-edit input-edit-number'
+                   value={total}  
+                   disabled={configure.disableInputs}
+                   onChange={(e) => setTotal(e.target.value)} 
+                   min={1}
             />
           </label>
 
@@ -267,4 +307,4 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
   
 }
 
-export default PurchaseOrders
+export default DeliveryOrders

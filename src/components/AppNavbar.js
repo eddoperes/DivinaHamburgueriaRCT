@@ -59,7 +59,7 @@ const AppNavbar = () => {
           <Link to={'/Menus'}>Cardápios</Link>
           <hr />
           <Link to={'/HallOrders'}>Pedidos salão</Link>
-          <Link to={'/'}>Pedidos delivery</Link>
+          <Link to={'/DeliveryOrders'}>Pedidos delivery</Link>
         </div>        
       </div> 
 
