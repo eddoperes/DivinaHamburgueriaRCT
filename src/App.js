@@ -51,6 +51,12 @@ import DeliveryOrdersNew from './pages/deliveryorders/DeliveryOrdersNew';
 import DeliveryOrdersEdit from './pages/deliveryorders/DeliveryOrdersEdit';
 import DeliveryOrdersList from './pages/deliveryorders/DeliveryOrdersList';
 
+
+import AlarmsNew from './pages/alarms/AlarmsNew';
+import AlarmsEdit from './pages/alarms/AlarmsEdit';
+import AlarmsRemove from './pages/alarms/AlarmsRemove';
+import AlarmsList from './pages/alarms/AlarmsList';
+
 import Login from './pages/login/Login';
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
@@ -120,6 +126,11 @@ function App() {
             <Route path="/DeliveryOrders" element={<DeliveryOrdersList/>} />
             <Route path="/DeliveryOrders/New" element={<DeliveryOrdersNew/>} />
             <Route path="/DeliveryOrders/Edit/:id" element={<DeliveryOrdersEdit/>} />
+
+            <Route path="/Alarms" element={<AlarmsList/>} />
+            <Route path="/Alarms/New" element={<AlarmsNew/>} />
+            <Route path="/Alarms/Edit/:id" element={<AlarmsEdit/>} />
+            <Route path="/Alarms/Remove/:id" element={<AlarmsRemove/>} />
 
           </Routes>
         </BrowserRouter>

@@ -84,7 +84,7 @@ const AppNavbar = () => {
           Inspeção
         </button>
         <div className="dropdown-content">
-          <Link to={'/ItensDoEstoqueReceita'}>Alarmes</Link>
+          <Link to={'/Alarms'}>Alarmes</Link>
         </div>        
       </div> 
       

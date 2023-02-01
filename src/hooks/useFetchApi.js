@@ -25,7 +25,8 @@ export const useFetchApi = () => {
             if (res.status === 401){
                 setUnauthorized(true);
             }
-            if (res.ok === false){                
+            if (res.ok === false){     
+                //console.log(res)           
                 throw new Error("Not 2xx response");
             }
             const data = await res.json();
