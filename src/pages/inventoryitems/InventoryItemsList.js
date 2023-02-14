@@ -17,9 +17,6 @@ const InventoryItemsList = () => {
     //state
     const [name, setName] = useState('');
     const [type, setType] = useState('1');
-    const [showWaiting, setShowWaiting] = useState(false);
-    const [showWaitingUnits, setShowWaitingUnits] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
 
     //ref
     const nameTxtRef = useRef(null);
@@ -30,14 +27,8 @@ const InventoryItemsList = () => {
     const typeRdbQqRef = useRef(null);
 
     //data
-    const { data: units, error: errorUnits, unitsGetAll, unauthorized: unauthorizedUnits} = useFetchUnits();    
-    if (units === null) {
-        setTimeout(() => {
-            setShowWaitingUnits(true);
-        }, 1000);
-        unitsGetAll();        
-    }
-    const {data: items, error, inventoryItemsGetByNameAndOrType, unauthorized:unauthorizedItem} = useFetchInventoryItems();
+    const { data: units, error: errorUnits, unitsGetAll, unauthorized: unauthorizedUnits, waiting: showWaitingUnits} = useFetchUnits();    
+    const {data: items, error, inventoryItemsGetByNameAndOrType, unauthorized:unauthorizedItem, waiting: showWaiting} = useFetchInventoryItems();
     const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
     //init
@@ -45,58 +36,51 @@ const InventoryItemsList = () => {
     
     useEffect(() => {   
 
-        if (units !== null &&            
-            items === null){
+        unitsGetAll();
 
-                if (name === localStorageGet("name") && 
-                    name !== "" &&
-                    type === localStorageGet("type"))
-                    return;
+        if(localStorageGet("nameChecked") === "" &&
+            localStorageGet("nameQQChecked") === "" &&
+            localStorageGet("typeChecked") === "" &&
+            localStorageGet("typeQqChecked") === "")
+        {
+            localStorageSet("nameQqChecked", true);
+            nameRdbQqRef.current.checked = true;
+            nameTxtRef.current.disabled = true;
+            localStorageSet("typeQqChecked", true);
+            typeRdbQqRef.current.checked = true;
+            typeSelRef.current.disabled = true;
+            return;
+        }                                                     
 
-                if(localStorageGet("nameChecked") === "" &&
-                   localStorageGet("nameQQChecked") === "" &&
-                   localStorageGet("typeChecked") === "" &&
-                   localStorageGet("typeQqChecked") === "")
-                {
-                    localStorageSet("nameQqChecked", true);
-                    nameRdbQqRef.current.checked = true;
-                    nameTxtRef.current.disabled = true;
-                    localStorageSet("typeQqChecked", true);
-                    typeRdbQqRef.current.checked = true;
-                    typeSelRef.current.disabled = true;
-                    return;
-                }                                                     
+        setName(localStorageGet("name"));
+        if (localStorageGet("nameChecked") === true){
+            nameRdbRef.current.checked = true;
+            nameTxtRef.current.disabled = false;
+        }
+        if (localStorageGet("nameQqChecked") === true){
+            nameRdbQqRef.current.checked = true;
+            nameTxtRef.current.disabled = true;
+        }
 
-                setName(localStorageGet("name"));
-                if (localStorageGet("nameChecked") === true){
-                    nameRdbRef.current.checked = true;
-                    nameTxtRef.current.disabled = false;
-                }
-                if (localStorageGet("nameQqChecked") === true){
-                    nameRdbQqRef.current.checked = true;
-                    nameTxtRef.current.disabled = true;
-                }
+        setType(localStorageGet("type"));
+        if (localStorageGet("typeChecked") === true){
+            typeRdbRef.current.checked = true;
+            typeSelRef.current.disabled = false;
+        }
+        if (localStorageGet("typeQqChecked") === true){
+            typeRdbQqRef.current.checked = true;
+            typeSelRef.current.disabled = true;
+        }
 
-                setType(localStorageGet("type"));
-                if (localStorageGet("typeChecked") === true){
-                    typeRdbRef.current.checked = true;
-                    typeSelRef.current.disabled = false;
-                }
-                if (localStorageGet("typeQqChecked") === true){
-                    typeRdbQqRef.current.checked = true;
-                    typeSelRef.current.disabled = true;
-                }
+        var sendName = "";
+        if (nameRdbRef.current.checked)
+            sendName = localStorageGet("name"); 
+        var sendType = "";
+        if (typeRdbRef.current.checked)
+            sendType = localStorageGet("type"); 
+        inventoryItemsGetByNameAndOrType(sendName, sendType);
 
-                var sendName = "";
-                if (nameRdbRef.current.checked)
-                    sendName = localStorageGet("name"); 
-                var sendType = "";
-                if (typeRdbRef.current.checked)
-                    sendType = localStorageGet("type"); 
-                inventoryItemsGetByNameAndOrType(sendName, sendType);
-
-        }    
-    }, [localStorageGet]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {          
         if (unauthorizedItem || unauthorizedUnits){
@@ -119,11 +103,7 @@ const InventoryItemsList = () => {
     }
 
     async function  handleSubmit(e){
-        e.preventDefault();
-        setTimeout(() => {
-            setShowWaiting(true);
-            setRefreshing(true);
-        }, 1000);        
+        e.preventDefault();       
 
         var sendName = "";
         if (nameRdbRef.current.checked)
@@ -133,7 +113,6 @@ const InventoryItemsList = () => {
             sendType = type 
         await inventoryItemsGetByNameAndOrType(sendName, sendType);
 
-        setRefreshing(false);
         localStorageSet("name", name);
         localStorageSet("nameChecked", nameRdbRef.current.checked);
         localStorageSet("nameQqChecked", nameRdbQqRef.current.checked);
@@ -261,50 +240,52 @@ const InventoryItemsList = () => {
                 </Link>     
             </div>
 
-            {(!items && (!error || refreshing) && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }            
-            {!items && error && !refreshing && 
+            {error && !showWaiting && 
                 <p className='error-message-list'>{error}</p>
             }
-            {(!units && (!errorUnits || refreshing) && showWaitingUnits) && 
+            {showWaitingUnits && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }  
-            {!units && errorUnits && !refreshing &&  
+            {errorUnits && !showWaitingUnits &&  
                 <p className='error-message-list'>{errorUnits}</p>
             }
                 
-            {(items && units) && <div className='card-container'>
-               {items.map((item) => (
-                    <div className='card' key={item.id}>
-                        <div>
-                            {item.name}
-                        </div>                        
-                        <div>
-                            {item.brand}
-                        </div>
-                        <div>
-                            {item.content} {GetUnitName(item.unityId)}                                                       
-                        </div>   
-                        <div>
-                            {GetTypeName(item.type)}
-                        </div> 
-                        <div>
-                            <Link to={`/InventoryItems/Edit/${item.id}`}>
-                                <button className='button-edit-list'>
-                                    <AiFillEdit />
-                                </button>                       
-                            </Link>                                                    
-                            <Link to={`/InventoryItems/Remove/${item.id}`}>
-                                <button className='button-remove-list'>
-                                    <AiFillDelete />    
-                                </button>                    
-                            </Link>                                                                                
+            {items && units && 
+             !showWaiting && !showWaitingUnits &&          
+                <div className='card-container'>
+                {items.map((item) => (
+                        <div className='card' key={item.id}>
+                            <div>
+                                {item.name}
+                            </div>                        
+                            <div>
+                                {item.brand}
+                            </div>
+                            <div>
+                                {item.content} {GetUnitName(item.unityId)}                                                       
+                            </div>   
+                            <div>
+                                {GetTypeName(item.type)}
+                            </div> 
+                            <div>
+                                <Link to={`/InventoryItems/Edit/${item.id}`}>
+                                    <button className='button-edit-list'>
+                                        <AiFillEdit />
+                                    </button>                       
+                                </Link>                                                    
+                                <Link to={`/InventoryItems/Remove/${item.id}`}>
+                                    <button className='button-remove-list'>
+                                        <AiFillDelete />    
+                                    </button>                    
+                                </Link>                                                                                
+                            </div>                    
                         </div>                    
-                    </div>                    
-                ))}
-            </div>}
-
+                    ))}
+                </div>
+            }
         </div>
     );
 

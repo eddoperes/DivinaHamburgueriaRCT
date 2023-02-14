@@ -13,6 +13,15 @@ const InventoryItemsNew = () => {
     const { inventoryItemsAdd } = useFetchInventoryItems();
 
     //init
+    const item = {
+        id:0,
+        name:'',
+        brand:'',
+        content:0,
+        unityId:1,
+        type:1
+    }
+
     const navigate = useNavigate();
 
     const configure = {
@@ -29,6 +38,7 @@ const InventoryItemsNew = () => {
         <div>
             <h1 className='h1-edit'>Novo item do estoque</h1>
             <InventoryItems handlePersistence={handlePersistence} 
+                            item={item}
                             configure={configure} >                            
             </InventoryItems>
         </div>

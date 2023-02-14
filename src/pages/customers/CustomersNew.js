@@ -13,6 +13,12 @@ const CustomersNew = () => {
     const { customersAdd } = useFetchCustomers();
 
     //init
+    const item = {
+        id:0,
+        name:'',
+        cpf:''
+    }
+
     const navigate = useNavigate();
 
     const configure = {
@@ -29,6 +35,7 @@ const CustomersNew = () => {
         <div>
             <h1 className='h1-edit'>Novo cliente</h1>
             <Customers handlePersistence={handlePersistence} 
+                       item={item} 
                        configure={configure} >                            
             </Customers>
         </div>

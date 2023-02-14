@@ -16,35 +16,23 @@ const MenuItemsResale = ({handlePersistence, item, configure}) => {
   const [photo, setPhoto] = useState('');
   const [inventoryItemId, setInventoryItemId] = useState(1);
 
-  const [showWaiting, setShowWaiting] = useState(false);
-
   //data
   const { data: inventoryItems, 
           error: errorInventoryItems, 
-          inventoryItemsGetAll } = useFetchInventoryItems();  
-  if (inventoryItems === null) {inventoryItemsGetAll()};  
+          waiting: showWaitingInventoryItems,
+          inventoryItemsGetAll } = useFetchInventoryItems();   
 
   //init
   useEffect(() => {             
-    if (item !== null && item !== undefined &&
-        inventoryItems !== null && inventoryItems !== undefined )
-    {        
 
-        if (name === ''){
+    inventoryItemsGetAll();
 
-          setName(item.name);
-          setDescription(item.description);
-          setPhoto(item.photo);
-          setInventoryItemId(item.inventoryItemId); 
-          
-        }
-
-    }    
-  }, [item, inventoryItems]);// eslint-disable-line react-hooks/exhaustive-deps
-
-  setTimeout(() => {
-    setShowWaiting(true);
-  }, 1000);
+    setName(item.name);
+    setDescription(item.description);
+    setPhoto(item.photo);
+    setInventoryItemId(item.inventoryItemId); 
+            
+  }, [item.id]);// eslint-disable-line react-hooks/exhaustive-deps
 
   //func 
   const handleResetTextValidation = async (e) => {
@@ -69,14 +57,14 @@ const MenuItemsResale = ({handlePersistence, item, configure}) => {
   return (
     <div>
 
-        {(!inventoryItems && !errorInventoryItems && showWaiting) && 
+        {showWaitingInventoryItems && 
             <p className='waiting-icon-edit'><BsHourglassSplit/></p>
         }  
-        {errorInventoryItems && 
+        {errorInventoryItems && !showWaitingInventoryItems &&
             <p className='error-message-edit'>{errorInventoryItems}</p>
         } 
       
-        {inventoryItems &&
+        {inventoryItems && !showWaitingInventoryItems &&
             <form onSubmit={handleSubmit} className="form-edit">
             
                 <label>Nome
@@ -132,11 +120,11 @@ const MenuItemsResale = ({handlePersistence, item, configure}) => {
                             disabled={configure.disableInputs}
                             onChange={(e) => {setInventoryItemId(e.target.value)}}              
                     >
-                            {inventoryItems.map((inventoryItem) => (
-                                <option key={inventoryItem.id} value={inventoryItem.id}>
-                                    {inventoryItem.name}
-                                </option>                   
-                            ))}
+                        {inventoryItems.map((inventoryItem) => (
+                            <option key={inventoryItem.id} value={inventoryItem.id}>
+                                {inventoryItem.name}
+                            </option>                   
+                        ))}
                     </select>
                 </label>
 

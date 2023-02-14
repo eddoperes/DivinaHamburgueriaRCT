@@ -13,26 +13,22 @@ const Inventory = ({handlePersistence, item, configure}) => {
   //state
   const [inventoryItemId, setInventoryItemId] = useState(0);
   const [quantity, setQuantity] = useState(0);
-  const [showWaiting, setShowWaiting] = useState(false);
 
   //data 
   const { data: inventoryItems, 
-    error: errorInventoryItems, 
-    inventoryItemsGetAll } = useFetchInventoryItems();  
-  if (inventoryItems === null) {inventoryItemsGetAll()};
+          error: errorInventoryItems, 
+          waiting: showWaitingInventoryItems,
+          inventoryItemsGetAll } = useFetchInventoryItems();  
 
   //init
-  setTimeout(() => {
-    setShowWaiting(true);
-  }, 1000);
-
   useEffect(() => {             
-    if (item !== null && item !== undefined)
-    {        
-      setInventoryItemId(item.inventoryItemId);
-      setQuantity(item.quantity);               
-    }
-  }, [item]);
+
+    inventoryItemsGetAll();
+
+    setInventoryItemId(item.inventoryItemId);
+    setQuantity(item.quantity);  
+
+  }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //func
   const handleSubmit = async (e) => {
@@ -47,14 +43,15 @@ const Inventory = ({handlePersistence, item, configure}) => {
   return (
     <div>
 
-      {(!inventoryItems && !errorInventoryItems && showWaiting) && 
+      {showWaitingInventoryItems && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorInventoryItems && 
+      {errorInventoryItems && !showWaitingInventoryItems &&
         <p className='error-message-edit'>{errorInventoryItems}</p>
       } 
          
-      {inventoryItems && 
+      {inventoryItems && !showWaitingInventoryItems &&
+
         <form onSubmit={handleSubmit} className="form-edit">
 
           <label>Item do estoque          

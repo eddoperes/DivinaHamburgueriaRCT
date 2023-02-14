@@ -2,7 +2,7 @@
 import InventoryItems from './InventoryItems';
 
 //react hooks
-import { useState } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 //data hooks
@@ -13,27 +13,24 @@ import { BsHourglassSplit } from 'react-icons/bs';
 
 const InventoryItemsEdit = () => {
 
-    //state
-    const [showWaiting, setShowWaiting] = useState(false);
-
     //data
     const { id } = useParams();
     const { data: item, 
             error: errorItem, 
+            waiting: showWaiting,
             inventoryItemsGetById, 
             inventoryItemsEdit } = useFetchInventoryItems();
-    if (item === null) {inventoryItemsGetById(id)};
 
     //init
+    useEffect(() => {      
+        inventoryItemsGetById(id);
+    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const navigate = useNavigate();
 
     const configure = {
         disableInputs: false,
-    }
-
-    setTimeout(() => {
-        setShowWaiting(true);
-    }, 1000);
+    }    
 
     //func
     const handlePersistence = async (data) => {
@@ -45,13 +42,13 @@ const InventoryItemsEdit = () => {
     return(
         <div>
             <h1 className='h1-edit'>Editar item do estoque</h1>
-            {(!item && !errorItem && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-edit'><BsHourglassSplit/></p>
             } 
-            {errorItem && 
+            {errorItem && !showWaiting &&
                 <p className='error-message-edit'>{errorItem}</p>
             }
-            {item &&
+            {item && !showWaiting &&
                 <InventoryItems handlePersistence={handlePersistence} 
                                 item={item} 
                                 configure={configure}>                                

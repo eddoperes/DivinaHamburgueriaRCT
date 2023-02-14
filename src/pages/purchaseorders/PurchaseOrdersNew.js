@@ -13,6 +13,16 @@ const PurchaseOrdersNew = () => {
   const { purchaseOrdersAdd } = useFetchPurchaseOrders();
 
   //init
+  const item = {
+    id: 0,
+    providerId : 1,
+    observation : '',
+    total : 0,
+    state: 1,
+    payment: 1,
+    purchaseOrderInventoryItems: []
+  } 
+
   const navigate = useNavigate();
 
   const configure = {
@@ -30,6 +40,7 @@ const PurchaseOrdersNew = () => {
       <div>
           <h1 className='h1-edit'>Novo pedido de compra</h1>
           <PurchaseOrders handlePersistence={handlePersistence} 
+                          item={item}  
                           configure={configure} >                            
           </PurchaseOrders>
       </div>

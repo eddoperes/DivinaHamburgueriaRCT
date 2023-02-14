@@ -12,7 +12,7 @@ export const useFetchProviders = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, unauthorized,
+    const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit,
            apiRemove} = useFetchApi();
@@ -55,7 +55,7 @@ export const useFetchProviders = () => {
         await apiRemove(`${url}/providers`, id);
     }
 
-    return {data, error, unauthorized,
+    return {data, error, unauthorized, waiting,
             providersGetAll, 
             providersGetByName,
             providersGetById, 

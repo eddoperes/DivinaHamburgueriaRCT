@@ -13,6 +13,14 @@ const MenuItemsResaleNew = () => {
   const { menuItemsResaleAdd } = useFetchMenuItemsResale();
 
   //init
+  const item = {
+    id: 0,
+    name : '',
+    description : '',
+    photo : '',
+    inventoryItemId: 1
+  } 
+
   const navigate = useNavigate();
 
   const configure = {
@@ -29,7 +37,8 @@ const MenuItemsResaleNew = () => {
     <div>
       <h1 className='h1-edit'>Novo item do cardápio revenda</h1>
       <MenuItemsResale handlePersistence={handlePersistence} 
-                      configure={configure} >                            
+                       item={item}
+                       configure={configure} >                            
       </MenuItemsResale>
     </div>
   )

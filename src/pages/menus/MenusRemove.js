@@ -2,8 +2,8 @@
 import Menus from './Menus';
 
 //react hooks
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 //data hooks
 import { useFetchMenus } from "../../hooks/useFetchMenus";
@@ -13,27 +13,24 @@ import { BsHourglassSplit } from 'react-icons/bs';
 
 const MenusRemove = () => {
 
-    //state
-    const [showWaiting, setShowWaiting] = useState(false);
-
     //data
     const { id } = useParams();
     const { data: item, 
             error: errorItem, 
+            waiting: showWaiting,
             menusGetById, 
             menusRemove } = useFetchMenus();
-    if (item === null) {menusGetById(id)};
 
     //init
+    useEffect(() => {      
+        menusGetById(id);
+    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const navigate = useNavigate();
 
     const configure = {
         disableInputs: true,
     }
-    
-    setTimeout(() => {
-        setShowWaiting(true);
-    }, 1000);
 
     //func
     const handlePersistence = async (data) => {        
@@ -45,13 +42,13 @@ const MenusRemove = () => {
     return(
         <div>
             <h1 className='h1-edit'>Remover item do estoque</h1>
-            {(!item && !errorItem && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon'><BsHourglassSplit/></p>
             } 
-            {errorItem && 
+            {errorItem && !showWaiting &&
                 <p className='error-message'>{errorItem}</p>
             }
-            {item &&
+            {item && !showWaiting &&
                 <Menus handlePersistence={handlePersistence} 
                                 item={item} 
                                 configure={configure}>                                

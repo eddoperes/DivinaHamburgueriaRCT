@@ -9,7 +9,6 @@ import { useState, useEffect, useRef } from "react";
 //data hooks
 
 //icons
-//import { BsHourglassSplit } from 'react-icons/bs';
 import { BiDownArrow, BiUpArrow } from 'react-icons/bi';
 
 const Providers = ({handlePersistence, item, configure}) => {
@@ -20,7 +19,6 @@ const Providers = ({handlePersistence, item, configure}) => {
 
     const [elementsAddress, setElementsAddress] = useState([]);
     const [elementsPhone, setElementsPhone] = useState([]);
-    //const [showWaiting, setShowWaiting] = useState(false);
   
     //ref
     const inputRefAddress = useRef(null);
@@ -28,17 +26,11 @@ const Providers = ({handlePersistence, item, configure}) => {
   
     //data
 
-    //init
-    //setTimeout(() => {
-    //    setShowWaiting(true);
-    //}, 1000);
-  
     useEffect(() => {             
-      if (item !== null && item !== undefined)
-      {       
-        setName(item.name);
-        setCNPJ(item.cnpj);                       
-      }
+   
+      setName(item.name);
+      setCNPJ(item.cnpj);                       
+
       setTimeout(() => {
         if (inputRefAddress.current !== null){              
           AccordionOpen(inputRefAddress.current);    
@@ -47,7 +39,7 @@ const Providers = ({handlePersistence, item, configure}) => {
           AccordionOpen(inputRefPhone.current);    
         }
       }, 200); 
-    }, [item]);
+    }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
   
     //func
     const handleResetTextValidation = async (e) => {
@@ -139,7 +131,7 @@ const Providers = ({handlePersistence, item, configure}) => {
             <p className='error-message-edit'>{errorUnits}</p>
         */} 
 
-        {true && 
+        {item && 
           <form onSubmit={handleSubmit} className="form-edit">
         
             <label>Nome

@@ -14,9 +14,7 @@ import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
 const MenuItemsRecipeList = () => {
 
     //state
-    const [name, setName] = useState('');
-    const [showWaiting, setShowWaiting] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
+    const [name, setName] = useState('');    
 
     //ref
     const nameTxtRef = useRef(null);
@@ -24,7 +22,7 @@ const MenuItemsRecipeList = () => {
     const nameRdbQqRef = useRef(null);
 
     //data
-    const { data: items, error, menuItemsRecipeGetByName, unauthorized:unauthorizedItem } = useFetchMenuItemsRecipe();
+    const { data: items, error, menuItemsRecipeGetByName, unauthorized:unauthorizedItem, waiting: showWaiting } = useFetchMenuItemsRecipe();
     const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
     //init
@@ -32,38 +30,30 @@ const MenuItemsRecipeList = () => {
     
     useEffect(() => {   
 
-        if (items === null){
-        
-            if (name === localStorageGet("namerecipe") &&
-                name !== "")
-                return;
-
-            if (localStorageGet("namerecipeChecked") === "" &&
-                localStorageGet("namerecipeQqChecked") === ""){
-                    localStorageSet("namerecipeQqChecked", true);
-                    nameRdbQqRef.current.checked = true;
-                    nameTxtRef.current.disabled = true;                    
-                    return; 
-            }
-
-            setName(localStorageGet("namerecipe"));
-            if (localStorageGet("namerecipeChecked") === true){
-                nameRdbRef.current.checked = true;
-                nameTxtRef.current.disabled = false;
-            }
-            if (localStorageGet("namerecipeQqChecked") === true){
+        if (localStorageGet("namerecipeChecked") === "" &&
+            localStorageGet("namerecipeQqChecked") === ""){
+                localStorageSet("namerecipeQqChecked", true);
                 nameRdbQqRef.current.checked = true;
-                nameTxtRef.current.disabled = true;
-            }           
+                nameTxtRef.current.disabled = true;                    
+                return; 
+        }
+
+        setName(localStorageGet("namerecipe"));
+        if (localStorageGet("namerecipeChecked") === true){
+            nameRdbRef.current.checked = true;
+            nameTxtRef.current.disabled = false;
+        }
+        if (localStorageGet("namerecipeQqChecked") === true){
+            nameRdbQqRef.current.checked = true;
+            nameTxtRef.current.disabled = true;
+        }           
         
-            var sendName = "";
-            if (nameRdbRef.current.checked)
-                sendName = localStorageGet("namerecipe");  
-            menuItemsRecipeGetByName(sendName);
-            
-        }    
+        var sendName = "";
+        if (nameRdbRef.current.checked)
+            sendName = localStorageGet("namerecipe");  
+        menuItemsRecipeGetByName(sendName);
       
-    }, [localStorageGet]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {          
         if (unauthorizedItem){
@@ -73,18 +63,13 @@ const MenuItemsRecipeList = () => {
 
     //func
     async function  handleSubmit(e){
-        e.preventDefault();
-        setTimeout(() => {
-            setShowWaiting(true);
-            setRefreshing(true);
-        }, 1000);        
+        e.preventDefault();     
 
         var sendName = "";
         if (nameRdbRef.current.checked)
              sendName = name 
         await menuItemsRecipeGetByName(sendName);
 
-        setRefreshing(false);
         localStorageSet("namerecipe", name);
         localStorageSet("namerecipeChecked", nameRdbRef.current.checked);
         localStorageSet("namerecipeQqChecked", nameRdbQqRef.current.checked);
@@ -160,38 +145,40 @@ const MenuItemsRecipeList = () => {
                 </Link>     
             </div>
 
-            {(!items && (!error || refreshing) && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }            
-            {!items && error && !refreshing && 
+            {error && !showWaiting && 
                 <p className='error-message-list'>{error}</p>
             }
 
-            {items && <div className='card-container'>
-               {items.map((item) => (
-                    <div className='card' key={item.id}>
-                        <div>
-                            {item.name}
-                        </div>  
-                        <div>
-                            {item.description}
-                        </div>                       
-                        <div>
-                            <Link to={`/MenuItemsRecipe/Edit/${item.id}`}>
-                                <button className='button-edit-list'>
-                                    <AiFillEdit />
-                                </button>                       
-                            </Link>                                                    
-                            <Link to={`/MenuItemsRecipe/Remove/${item.id}`}>
-                                <button className='button-remove-list'>
-                                    <AiFillDelete />    
-                                </button>                    
-                            </Link>                                                                                
+            {items && !showWaiting && 
+                <div className='card-container'>
+                    {items.map((item) => (
+                        <div className='card' key={item.id}>
+                            <div>
+                                {item.name}
+                            </div>  
+                            <div>
+                                {item.description}
+                            </div>                       
+                            <div>
+                                <Link to={`/MenuItemsRecipe/Edit/${item.id}`}>
+                                    <button className='button-edit-list'>
+                                        <AiFillEdit />
+                                    </button>                       
+                                </Link>                                                    
+                                <Link to={`/MenuItemsRecipe/Remove/${item.id}`}>
+                                    <button className='button-remove-list'>
+                                        <AiFillDelete />    
+                                    </button>                    
+                                </Link>                                                                                
+                            </div>                    
                         </div>                    
-                    </div>                    
-                ))}
-            </div>}
-
+                    ))}
+                </div>
+            }
+            
         </div>
     );
 

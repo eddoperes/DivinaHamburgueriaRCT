@@ -6,7 +6,7 @@ export const useFetchHallOrders = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, unauthorized,
+    const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit, apiPatch,
            apiRemove} = useFetchApi();
@@ -39,7 +39,7 @@ export const useFetchHallOrders = () => {
         await apiRemove(`${url}/hallorders`, id);
     }
 
-    return {data, error, unauthorized,
+    return {data, error, unauthorized, waiting,
             hallOrdersGetAll, 
             hallOrdersGetByCode,
             hallOrdersGetById, 

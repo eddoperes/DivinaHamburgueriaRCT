@@ -13,6 +13,16 @@ const DeliveryOrdersNew = () => {
   const { deliveryOrdersAdd } = useFetchDeliveryOrders();
 
   //init
+  const item = {
+    id:0,
+    customerId:1,
+    observation:'',
+    total:'',
+    state:1,
+    payment:1,
+    deliveryOrderMenuItems:[]
+  }
+
   const navigate = useNavigate();
 
   const configure = {
@@ -30,6 +40,7 @@ const DeliveryOrdersNew = () => {
       <div>
           <h1 className='h1-edit'>Novo pedido delivery</h1>
           <DeliveryOrders handlePersistence={handlePersistence} 
+                          item={item}  
                           configure={configure} >                            
           </DeliveryOrders>
       </div>

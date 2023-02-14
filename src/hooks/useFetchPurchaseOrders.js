@@ -6,7 +6,7 @@ export const useFetchPurchaseOrders = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, unauthorized,
+    const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit, apiPatch,
            apiRemove} = useFetchApi();
@@ -39,7 +39,7 @@ export const useFetchPurchaseOrders = () => {
         await apiRemove(`${url}/purchaseorders`, id);
     }
 
-    return {data, error, unauthorized,
+    return {data, error, unauthorized, waiting,
             purchaseOrdersGetAll, 
             purchaseOrdersGetByProvider,
             purchaseOrdersGetById, 

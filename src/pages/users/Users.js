@@ -14,25 +14,16 @@ const Users = ({handlePersistence, item, configure}) => {
     const [state, setState] = useState(1);
     const [email, setEmail] = useState(''); 
     const [password, setPassword] = useState('');   
-    
-    //const [showWaiting, setShowWaiting] = useState(false);
-  
-    //data
 
     //init
-    //setTimeout(() => {
-    //    setShowWaiting(true);
-    //}, 1000);
-  
     useEffect(() => {             
-      if (item !== null && item !== undefined)
-      {       
-        setName(item.name);  
-        setType(item.type);  
-        setState(item.state);
-        setEmail(item.email);        
-      }
-    }, [item]);
+     
+      setName(item.name);  
+      setType(item.type);  
+      setState(item.state);
+      setEmail(item.email);        
+
+    }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
   
     //func
     const handleResetTextValidation = async (e) => {
@@ -66,7 +57,7 @@ const Users = ({handlePersistence, item, configure}) => {
             <p className='error-message-edit'>{errorUnits}</p>
         */} 
 
-        {true && 
+        {item && 
           <form onSubmit={handleSubmit} className="form-edit">
         
             <label>Nome

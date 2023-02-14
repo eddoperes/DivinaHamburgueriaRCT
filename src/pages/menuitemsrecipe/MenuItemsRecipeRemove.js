@@ -2,8 +2,8 @@
 import MenuItemsRecipe from './MenuItemsRecipe';
 
 //react hooks
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 //data hooks
 import { useFetchMenuItemsRecipe } from "../../hooks/useFetchMenuItemsRecipe";
@@ -14,26 +14,27 @@ import { BsHourglassSplit } from 'react-icons/bs';
 const MenuItemsRecipeRemove = () => {
 
   //state
-  const [showWaiting, setShowWaiting] = useState(false);
+  //const [showWaiting, setShowWaiting] = useState(false);
 
   //data
   const { id } = useParams();
   const { data: item,
           error: errorItem,           
+          waiting: showWaiting,
           menuItemsRecipeRemove,
           menuItemsRecipeGetById } = useFetchMenuItemsRecipe();
-  if (item === null) {menuItemsRecipeGetById(id)};
+  //if (item === null) {menuItemsRecipeGetById(id)};
 
   //init
+  useEffect(() => {      
+    menuItemsRecipeGetById(id);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const navigate = useNavigate();
 
   const configure = {
         disableInputs: true
   }
-
-  setTimeout(() => {
-    setShowWaiting(true);
-  }, 1000);
 
   //func
   const handlePersistence = async (data) => {
@@ -46,13 +47,13 @@ const MenuItemsRecipeRemove = () => {
   return (
     <div>
         <h1 className='h1-edit'>Remover item do cardápio receita</h1>
-        {(!item && !errorItem && showWaiting) && 
+        {showWaiting && 
             <p className='waiting-icon-edit'><BsHourglassSplit/></p>
         } 
-        {errorItem && 
+        {errorItem && !showWaiting &&
             <p className='error-message-edit'>{errorItem}</p>
         }
-        {item &&
+        {item && !showWaiting &&
             <MenuItemsRecipe handlePersistence={handlePersistence} 
                              item={item} 
                              configure={configure}>                                

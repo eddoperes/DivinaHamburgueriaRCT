@@ -15,33 +15,29 @@ const Alarms = ({handlePersistence, item, configure}) => {
   const [unitId, setUnitId] = useState(1);
   const [minimumQuantity, setMinimumQuantity] = useState(0);  
   const [validityInDays, setValidityInDays] = useState(0);
-  const [showWaiting, setShowWaiting] = useState(false);
 
   //data
   const { data: units, 
           error: errorUnits, 
+          waiting: showWaitingUnits,
           unitsGetAll } = useFetchUnits();  
-  if (units === null) {unitsGetAll()};
 
   const { data: eatables, 
           error: errorEatables, 
+          waiting: showWaitingEatables,
           inventoryItemsGetDistinctNames} = useFetchInventoryItems();    
-  if (eatables === null) {inventoryItemsGetDistinctNames()};
 
-  //init
-  setTimeout(() => {
-      setShowWaiting(true);
-  }, 1000);
+  useEffect(() => {      
 
-  useEffect(() => {             
-    if (item !== null && item !== undefined)
-    {        
-        setEatableId(item.eatableId);
-        setUnitId(item.unityId);
-        setMinimumQuantity(item.minimumQuantity);                
-        setValidityInDays(item.validityInDays);        
-    }    
-  }, [item]);
+    unitsGetAll();
+    inventoryItemsGetDistinctNames();
+
+    setEatableId(item.eatableId);
+    setUnitId(item.unityId);
+    setMinimumQuantity(item.minimumQuantity);                
+    setValidityInDays(item.validityInDays);        
+ 
+  }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //func
   const handleResetTextValidation = async (e) => {
@@ -65,21 +61,22 @@ const Alarms = ({handlePersistence, item, configure}) => {
 
   return (
     <div>
-        {(!units && !errorUnits && showWaiting) && 
+        
+        {showWaitingUnits && 
             <p className='waiting-icon-edit'><BsHourglassSplit/></p>
         }  
-        {errorUnits && 
+        {errorUnits && !showWaitingUnits && 
             <p className='error-message-edit'>{errorUnits}</p>
         } 
 
-        {(!eatables && !errorEatables && showWaiting) && 
+        {showWaitingEatables && 
             <p className='waiting-icon-edit'><BsHourglassSplit/></p>
         }  
-        {errorEatables && 
+        {errorEatables && !showWaitingEatables && 
             <p className='error-message-edit'>{errorEatables}</p>
         } 
 
-        {units && eatables &&
+        {units && eatables && !showWaitingUnits && !showWaitingEatables && 
             <form onSubmit={handleSubmit} className="form-edit">
         
                 <label>Comestível          

@@ -12,7 +12,7 @@ export const useFetchMenuItemsResale = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, unauthorized,
+    const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit,
            apiRemove} = useFetchApi();
@@ -55,7 +55,7 @@ export const useFetchMenuItemsResale = () => {
         await apiRemove(`${url}/menuitemsResale`, id);
     }
 
-    return {data, error, unauthorized, executing,
+    return {data, error, unauthorized,  waiting,
             menuItemsResaleGetAll, 
             menuItemsResaleGetByName,
             menuItemsResaleGetById, 

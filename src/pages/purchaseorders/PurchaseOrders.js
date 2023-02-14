@@ -25,7 +25,6 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
   const [payment, setPayment] = useState(1);
   const [newItems, setNewItems] = useState([0]);
   const [elements, setElements] = useState([]);
-  const [showWaiting, setShowWaiting] = useState(false);
   
   //ref
   const inputRef = useRef(null);
@@ -33,55 +32,49 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
   //data
   const { data: providers, 
           error: errorProviders, 
-          providersGetAll } = useFetchProviders();  
-  if (providers === null) {providersGetAll()};  
+          waiting: showWaitingProviders,
+          providersGetAll } = useFetchProviders();   
   const { data: inventoryItems, 
           error: errorInventoryItems, 
+          waiting: showWaitingInventoryItems,
           inventoryItemsGetAll } = useFetchInventoryItems();  
-  if (inventoryItems === null) {inventoryItemsGetAll()};
 
   //init
-  useEffect(() => {        
+  useEffect(() => {     
     
-    if (item !== null && item !== undefined && 
-        inventoryItems !== null && inventoryItems !== undefined)
-    {  
+    providersGetAll();
+    inventoryItemsGetAll();
 
-      if (total === 0){
-
-        setProviderId(item.providerId);
-        setObservation(item.observation);
-        setTotal(item.total);
-        setState(item.state);
-        setPayment(item.payment);
+    setProviderId(item.providerId);
+    setObservation(item.observation);
+    setTotal(item.total);
+    setState(item.state);
+    setPayment(item.payment);
           
-        const data = [...newItems];
-        for (var i=0; i < item.purchaseOrderInventoryItems.length; i++){             
-          data.push(data.length);            
+    const data = [...newItems];
+    for (var i=0; i < item.purchaseOrderInventoryItems.length; i++){             
+      data.push(data.length);            
+    }
+    setNewItems(data);
+
+  }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+  
+    if (inventoryItems?.length >= 0 &&
+        providers?.length >= 0){
+
+      setTimeout(() => {
+        for (var i=0; i < item.purchaseOrderInventoryItems.length; i++){               
+          popItem(i, item.purchaseOrderInventoryItems[i]);
+        }     
+        if (inputRef.current !== null){              
+          AccordionOpen(inputRef.current);              
         }
-        setNewItems(data);
-
-        setTimeout(() => {
-          for (var i=0; i < item.purchaseOrderInventoryItems.length; i++){               
-            popItem(i, item.purchaseOrderInventoryItems[i]);
-          }          
-        }, 200); 
-
-      }           
-
+      }, 200); 
     }
 
-    setTimeout(() => {
-      if (inputRef.current !== null){              
-        AccordionOpen(inputRef.current);              
-      }
-    }, 200); 
-    
-  }, [item, inventoryItems]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  setTimeout(() => {
-      setShowWaiting(true);
-  }, 1000);
+  }, [inventoryItems?.length, providers?.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //func
   const handleSubmit = async (e) => {
@@ -99,7 +92,7 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
       if (item !== null)
         data.purchaseOrderInventoryItems.push(item);      
     }
-    console.log(data);
+    //console.log(data);
     handlePersistence(data)
   }
 
@@ -176,20 +169,23 @@ const PurchaseOrders = ({handlePersistence, item, configure}) => {
   return (
     <div>
 
-      {(!inventoryItems && !errorInventoryItems && showWaiting) && 
+      {showWaitingInventoryItems && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorInventoryItems && 
+      {errorInventoryItems && !showWaitingInventoryItems &&
         <p className='error-message-edit'>{errorInventoryItems}</p>
       } 
       
-      {(!providers && !errorProviders && showWaiting) && 
+      {showWaitingProviders && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorProviders &&  
+      {errorProviders &&  !showWaitingProviders &&
         <p className='error-message-edit'>{errorProviders}</p>
       } 
-      {providers && inventoryItems &&
+
+      {item && providers && inventoryItems &&
+       !showWaitingInventoryItems && !showWaitingProviders &&
+
         <form onSubmit={handleSubmit} className="form-edit">
 
           <label > Fornecedor          

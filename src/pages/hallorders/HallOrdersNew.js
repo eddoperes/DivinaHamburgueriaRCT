@@ -13,6 +13,15 @@ const HallOrdersNew = () => {
   const { hallOrdersAdd } = useFetchHallOrders();
 
   //init
+  const item = {
+    id:0,
+    customerId:null,
+    observation:'',
+    total:'',
+    state:1,
+    hallOrderMenuItems:[]
+  }
+
   const navigate = useNavigate();
 
   const configure = {
@@ -30,6 +39,7 @@ const HallOrdersNew = () => {
       <div>
           <h1 className='h1-edit'>Novo pedido salão</h1>
           <HallOrders handlePersistence={handlePersistence} 
+                      item={item}  
                       configure={configure} >                            
           </HallOrders>
       </div>
