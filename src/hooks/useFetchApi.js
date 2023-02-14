@@ -5,6 +5,7 @@ export const useFetchApi = () => {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [unauthorized, setUnauthorized] =  useState(false);
+    const [waiting, setWaiting] =  useState(false);
 
     const getToken = () => {
         const value = window.localStorage.getItem("token");
@@ -14,9 +15,25 @@ export const useFetchApi = () => {
             return JSON.parse(value).accessToken;
     }
 
-    const apiGetMany = async (url) => {
+    let isWaitRequired;
+
+    const requireWaiting = () => {                
+        setTimeout(() => {
+            if (isWaitRequired)
+                setWaiting(true)
+        }, 1000);                  
+        isWaitRequired = true;      
+    }
+
+    const cancelWaiting = ()  => {
+        isWaitRequired = false;
+        setWaiting(false);
+    }
+
+    const apiGetMany = async (url) => {                      
+        requireWaiting(); 
         try
-        {
+        {            
             const res = await fetch(url, {             
                 headers: {
                     Authorization : `Bearer ${getToken()}`
@@ -30,15 +47,19 @@ export const useFetchApi = () => {
                 throw new Error("Not 2xx response");
             }
             const data = await res.json();
-            setData(data);                        
+            setData(data);  
+            setError(null);                                                        
         }
         catch(error)
         {
             setError(error.message);
-        }   
+            setData(null); 
+        }    
+        cancelWaiting();
     }
 
     const apiGetById = async (url, id) => {
+        requireWaiting();  
         try
         {
             const res = await fetch(`${url}/${id}`, {             
@@ -53,15 +74,19 @@ export const useFetchApi = () => {
                 throw new Error("Not 2xx response");
             }
             const data = await res.json();
-            setData(data);                        
+            setData(data);
+            setError(null);                         
         }
         catch(error)
         {
-            setError(error.message)
+            setError(error.message);
+            setData(null);
         }
+        cancelWaiting();
     }
 
     const apiAdd = async (url, data) => {
+        requireWaiting();  
         try
         {
             const res = await fetch(url, {
@@ -80,14 +105,18 @@ export const useFetchApi = () => {
             } 
             const resBody = await res.json();
             setData(resBody);           
+            setError(null); 
         }
         catch(error)
         {
-            setError(error.message)
+            setError(error.message);
+            setData(null);
         }
+        cancelWaiting();
     }
 
     const apiEdit = async (url, id, data) => {
+        requireWaiting();  
         try
         {
             const res = await fetch(`${url}/${id}`, {
@@ -104,14 +133,17 @@ export const useFetchApi = () => {
             if (res.ok === false){
                 throw new Error("Not 2xx response");
             }           
+            setError(null); 
         }
         catch(error)
         {
-            setError(error.message)
+            setError(error.message);
         }
+        cancelWaiting();
     }
 
     const apiPatch = async (url, id, data) => {
+        requireWaiting();  
         try
         {
             const res = await fetch(`${url}/${id}`, {
@@ -128,14 +160,17 @@ export const useFetchApi = () => {
             if (res.ok === false){
                 throw new Error("Not 2xx response");
             }           
+            setError(null); 
         }
         catch(error)
         {
             setError(error.message)
         }
+        cancelWaiting();
     }
 
     const apiRemove = async (url, id) => {
+        requireWaiting();  
         try
         {
             const res = await fetch(`${url}/${id}`, {
@@ -150,14 +185,16 @@ export const useFetchApi = () => {
             if (res.ok === false){
                 throw new Error("Not 2xx response");
             }           
+            setError(null); 
         }
         catch(error)
         {
             setError(error.message)
         }
+        cancelWaiting();
     }
 
-    return {data, error, unauthorized,
+    return {data, error, unauthorized, waiting,
             apiGetMany, apiGetById, 
             apiAdd, apiEdit, apiPatch, apiRemove};
 

@@ -24,59 +24,53 @@ const MenuItemsRecipe = ({handlePersistence, item, configure}) => {
 
   const [newItems, setNewItems] = useState([0]);
   const [elements, setElements] = useState([]);
-  const [showWaiting, setShowWaiting] = useState(false);
+  //const [showWaiting, setShowWaiting] = useState(false);
 
   //ref
   const inputRef = useRef(null);
 
   //data
   const { data: eatables, 
-    error: errorEatables, 
-    inventoryItemsGetDistinctNames } = useFetchInventoryItems();  
-  if (eatables === null) {inventoryItemsGetDistinctNames()};  
+          error: errorEatables, 
+          waiting: showWaitingEatables,
+          inventoryItemsGetDistinctNames } = useFetchInventoryItems();    
   const { data: units, 
-    error: errorUnits, 
-    unitsGetAll } = useFetchUnits();  
-  if (units === null) {unitsGetAll()};
+          error: errorUnits, 
+          waiting: showWaitingUnits,
+          unitsGetAll } = useFetchUnits();  
 
   //init
   useEffect(() => {             
-    if (item !== null && item !== undefined &&
-        eatables !== null && eatables !== undefined &&
-        units !== null && units !== undefined )
-    {        
 
-        if (name === ''){
+    inventoryItemsGetDistinctNames();
+    unitsGetAll();
 
-          setName(item.name);
-          setDescription(item.description);
-          setPhoto(item.photo); 
+    setName(item.name);
+    setDescription(item.description);
+    setPhoto(item.photo); 
           
-          const data = [...newItems];
-          for (var i=0; i < item.ingredients.length; i++){             
-            data.push(data.length);            
-          }
-          setNewItems(data);
+    const data = [...newItems];
+    for (var i=0; i < item.ingredients.length; i++){             
+      data.push(data.length);            
+    }
+    setNewItems(data);   
 
-          setTimeout(() => {
-            for (var i=0; i < item.ingredients.length; i++){               
-              popItem(i, item.ingredients[i]);
-            }          
-          }, 200); 
+  }, [item.id]);// eslint-disable-line react-hooks/exhaustive-deps
 
-        }
-
-    }    
-    setTimeout(() => {
+  useEffect(() => {  
+    if (eatables?.length >= 0 &&
+        units?.length >= 0){
+      setTimeout(() => {
+        for (var i=0; i < item.ingredients.length; i++){               
+          popItem(i, item.ingredients[i]);
+        }   
         if (inputRef.current !== null){              
           AccordionOpen(inputRef.current);              
         }
-    }, 200); 
-  }, [item, eatables, units]);// eslint-disable-line react-hooks/exhaustive-deps
+      }, 200); 
+    }
+  }, [eatables?.length, units?.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  setTimeout(() => {
-    setShowWaiting(true);
-  }, 1000);
 
   //func 
   const handleResetTextValidation = async (e) => {
@@ -102,7 +96,6 @@ const MenuItemsRecipe = ({handlePersistence, item, configure}) => {
       }
     handlePersistence(data)
   }
-
 
   function handleGetItem(number, getItem){
     const data = elements;    
@@ -174,27 +167,27 @@ const MenuItemsRecipe = ({handlePersistence, item, configure}) => {
     );
   }
 
-
-
   return (
     <div>
 
 
-        {(!eatables && !errorEatables && showWaiting) && 
+        {showWaitingEatables && 
             <p className='waiting-icon-edit'><BsHourglassSplit/></p>
         }  
-        {errorEatables && 
+        {errorEatables && !showWaitingEatables &&
             <p className='error-message-edit'>{errorEatables}</p>
         } 
       
-        {(!units && !errorUnits && showWaiting) && 
+        {showWaitingUnits && 
             <p className='waiting-icon-edit'><BsHourglassSplit/></p>
         }  
-        {errorUnits &&  
+        {errorUnits && !showWaitingUnits &&
             <p className='error-message-edit'>{errorUnits}</p>
         } 
 
-        {eatables && units &&
+        {item && eatables && units && 
+         !showWaitingEatables && !showWaitingUnits &&
+
             <form onSubmit={handleSubmit} className="form-edit">
             
                 <label>Nome

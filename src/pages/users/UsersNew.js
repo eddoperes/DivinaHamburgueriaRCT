@@ -13,6 +13,15 @@ const UsersNew = () => {
     const { usersAdd } = useFetchUsers();
 
     //init
+    const item = {
+        id: 0,
+        name : '',
+        type: 1,
+        state : 1,
+        email : '',  
+        password : '',      
+    } 
+
     const navigate = useNavigate();
 
     const configure = {
@@ -30,6 +39,7 @@ const UsersNew = () => {
         <div>
             <h1 className='h1-edit'>Novo usuário</h1>
             <Users handlePersistence={handlePersistence} 
+                   item={item} 
                    configure={configure} >                            
             </Users>
         </div>

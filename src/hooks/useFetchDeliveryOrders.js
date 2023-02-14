@@ -6,7 +6,7 @@ export const useFetchDeliveryOrders = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, unauthorized,
+    const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit, apiPatch,
            apiRemove} = useFetchApi();
@@ -39,7 +39,7 @@ export const useFetchDeliveryOrders = () => {
         await apiRemove(`${url}/deliveryorders`, id);
     }
 
-    return {data, error, unauthorized,
+    return {data, error, unauthorized, waiting,
             deliveryOrdersGetAll, 
             deliveryOrdersGetByCode,
             deliveryOrdersGetById, 

@@ -15,8 +15,6 @@ const MenuItemsResaleList = () => {
 
   //state
   const [name, setName] = useState('');
-  const [showWaiting, setShowWaiting] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
   //ref
   const nameTxtRef = useRef(null);
@@ -24,7 +22,7 @@ const MenuItemsResaleList = () => {
   const nameRdbQqRef = useRef(null);
 
   //data
-  const { data: items, error, menuItemsResaleGetByName, unauthorized:unauthorizedItem } = useFetchMenuItemsResale();
+  const { data: items, error, menuItemsResaleGetByName, unauthorized:unauthorizedItem, waiting: showWaiting } = useFetchMenuItemsResale();
   const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
   //init
@@ -32,38 +30,30 @@ const MenuItemsResaleList = () => {
     
   useEffect(() => {   
 
-    if (items === null){
-
-        if (name === localStorageGet("nameresale") &&
-            name !== "")
-            return;
-
-        if (localStorageGet("nameresaleChecked") === "" &&
-            localStorageGet("nameresaleQqChecked") === ""){
-                localStorageSet("nameresaleQqChecked", true);
-                nameRdbQqRef.current.checked = true;
-                nameTxtRef.current.disabled = true;
-                return; 
-        }
-
-        setName(localStorageGet("nameresale"));
-        if (localStorageGet("nameresaleChecked") === true){
-            nameRdbRef.current.checked = true;
-            nameTxtRef.current.disabled = false;
-        }
-        if (localStorageGet("nameresaleQqChecked") === true){
+    if (localStorageGet("nameresaleChecked") === "" &&
+        localStorageGet("nameresaleQqChecked") === ""){
+            localStorageSet("nameresaleQqChecked", true);
             nameRdbQqRef.current.checked = true;
             nameTxtRef.current.disabled = true;
-        }           
+            return; 
+    }
 
-        var sendName = "";
-        if (nameRdbRef.current.checked)
-            sendName = localStorageGet("nameresale");  
-        menuItemsResaleGetByName(sendName);
-            
-    }    
+    setName(localStorageGet("nameresale"));
+    if (localStorageGet("nameresaleChecked") === true){
+        nameRdbRef.current.checked = true;
+        nameTxtRef.current.disabled = false;
+    }
+    if (localStorageGet("nameresaleQqChecked") === true){
+        nameRdbQqRef.current.checked = true;
+        nameTxtRef.current.disabled = true;
+    }           
+
+    var sendName = "";
+    if (nameRdbRef.current.checked)
+        sendName = localStorageGet("nameresale");  
+    menuItemsResaleGetByName(sendName); 
       
-  }, [localStorageGet]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {          
         if (unauthorizedItem){
@@ -73,18 +63,13 @@ const MenuItemsResaleList = () => {
 
   //func
   async function  handleSubmit(e){
-    e.preventDefault();
-    setTimeout(() => {
-        setShowWaiting(true);
-        setRefreshing(true);
-    }, 1000);        
+    e.preventDefault();       
 
     var sendName = "";
     if (nameRdbRef.current.checked)
             sendName = name 
     await menuItemsResaleGetByName(sendName);
 
-    setRefreshing(false);
     localStorageSet("nameresale", name);
     localStorageSet("nameresaleChecked", nameRdbRef.current.checked);
     localStorageSet("nameresaleQqChecked", nameRdbQqRef.current.checked);
@@ -160,39 +145,42 @@ const MenuItemsResaleList = () => {
             </Link>     
         </div>
 
-        {(!items && (!error || refreshing) && showWaiting) && 
+        {showWaiting && 
             <p className='waiting-icon-list'><BsHourglassSplit/></p>
         }            
-        {!items && error && !refreshing && 
+        {error && !showWaiting && 
             <p className='error-message-list'>{error}</p>
         }
 
-        {items && <div className='card-container'>
-            {items.map((item) => (
-                <div className='card' key={item.id}>
-                    <div>
-                        {item.name}
-                    </div>  
-                    <div>
-                        {item.description}
-                    </div>                       
-                    <div>
-                        <Link to={`/MenuItemsResale/Edit/${item.id}`}>
-                            <button className='button-edit-list'>
-                                <AiFillEdit />
-                            </button>                       
-                        </Link>                                                    
-                        <Link to={`/MenuItemsResale/Remove/${item.id}`}>
-                            <button className='button-remove-list'>
-                                <AiFillDelete />    
-                            </button>                    
-                        </Link>                                                                                
+        {items && !showWaiting && 
+            <div className='card-container'>
+                {items.map((item) => (
+                    <div className='card' key={item.id}>
+                        <div>
+                            {item.name}
+                        </div>  
+                        <div>
+                            {item.description}
+                        </div>                       
+                        <div>
+                            <Link to={`/MenuItemsResale/Edit/${item.id}`}>
+                                <button className='button-edit-list'>
+                                    <AiFillEdit />
+                                </button>                       
+                            </Link>                                                    
+                            <Link to={`/MenuItemsResale/Remove/${item.id}`}>
+                                <button className='button-remove-list'>
+                                    <AiFillDelete />    
+                                </button>                    
+                            </Link>                                                                                
+                        </div>                    
                     </div>                    
-                </div>                    
-            ))}
-        </div>}
+                ))}
+            </div>
+        }
 
     </div>
+    
   )
 
 }

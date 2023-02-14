@@ -12,7 +12,7 @@ export const useFetchMenuItemsRecipe = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, unauthorized,
+    const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit,
            apiRemove} = useFetchApi();
@@ -55,7 +55,7 @@ export const useFetchMenuItemsRecipe = () => {
         await apiRemove(`${url}/menuitemsrecipe`, id);
     }
 
-    return {data, error, unauthorized, executing,
+    return {data, error, unauthorized,  waiting,
             menuItemsRecipeGetAll, 
             menuItemsRecipeGetByName,
             menuItemsRecipeGetById, 

@@ -15,8 +15,6 @@ const UsersList = () => {
 
     //state
     const [name, setName] = useState('');
-    const [showWaiting, setShowWaiting] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
 
     //ref
     const nameTxtRef = useRef(null);
@@ -24,7 +22,7 @@ const UsersList = () => {
     const nameRdbQqRef = useRef(null);
 
     //data
-    const {data: items, error, usersGetByName, unauthorized:unauthorizedItem} = useFetchUsers();
+    const {data: items, error, usersGetByName, unauthorized:unauthorizedItem, waiting: showWaiting} = useFetchUsers();
     const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
     //init
@@ -32,39 +30,32 @@ const UsersList = () => {
     
     useEffect(() => {   
 
-        if (items === null){
+        if(localStorageGet("nameUserChecked") === "" &&
+            localStorageGet("nameUserQqChecked") === "")
+        {
+            localStorageSet("nameUserQqChecked", true);
+            nameRdbQqRef.current.checked = true;
+            nameTxtRef.current.disabled = true;                   
+            return;
+        }                                                     
 
-                if (name === localStorageGet("nameUser") && 
-                    name !== "")
-                    return;
+        setName(localStorageGet("nameUser"));
+        if (localStorageGet("nameUserChecked") === true){
+            nameRdbRef.current.checked = true;
+            nameTxtRef.current.disabled = false;
+        }
+        if (localStorageGet("nameUserQqChecked") === true){
+            nameRdbQqRef.current.checked = true;
+            nameTxtRef.current.disabled = true;
+        }
 
-                if(localStorageGet("nameUserChecked") === "" &&
-                   localStorageGet("nameUserQqChecked") === "")
-                {
-                    localStorageSet("nameUserQqChecked", true);
-                    nameRdbQqRef.current.checked = true;
-                    nameTxtRef.current.disabled = true;                   
-                    return;
-                }                                                     
+        var sendName = "";
+        if (nameRdbRef.current.checked)
+            sendName = localStorageGet("nameUser"); 
+        
+        usersGetByName(sendName);
 
-                setName(localStorageGet("nameUser"));
-                if (localStorageGet("nameUserChecked") === true){
-                    nameRdbRef.current.checked = true;
-                    nameTxtRef.current.disabled = false;
-                }
-                if (localStorageGet("nameUserQqChecked") === true){
-                    nameRdbQqRef.current.checked = true;
-                    nameTxtRef.current.disabled = true;
-                }
-
-                var sendName = "";
-                if (nameRdbRef.current.checked)
-                    sendName = localStorageGet("nameUser"); 
-               
-                usersGetByName(sendName);
-
-        }    
-    }, [localStorageGet]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {          
         if (unauthorizedItem){
@@ -74,18 +65,13 @@ const UsersList = () => {
 
     //func
     async function  handleSubmit(e){
-        e.preventDefault();
-        setTimeout(() => {
-            setShowWaiting(true);
-            setRefreshing(true);
-        }, 1000);        
+        e.preventDefault();      
 
         var sendName = "";
         if (nameRdbRef.current.checked)
              sendName = name 
         await usersGetByName(sendName);
 
-        setRefreshing(false);
         localStorageSet("nameUser", name);
         localStorageSet("nameUserChecked", nameRdbRef.current.checked);
         localStorageSet("nameUserQqChecked", nameRdbQqRef.current.checked);
@@ -161,34 +147,36 @@ const UsersList = () => {
                 </Link>     
             </div>
 
-            {(!items && (!error || refreshing) && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }            
-            {!items && error && !refreshing && 
+            {error && !showWaiting && 
                 <p className='error-message-list'>{error}</p>
             }
                           
-            {(items) && <div className='card-container'>
-               {items.map((item) => (
-                    <div className='card' key={item.id}>
-                        <div>
-                            {item.name}
-                        </div>                                               
-                        <div>
-                            <Link to={`/Users/Edit/${item.id}`}>
-                                <button className='button-edit-list'>
-                                    <AiFillEdit />
-                                </button>                       
-                            </Link>                                                    
-                            <Link to={`/Users/Remove/${item.id}`}>
-                                <button className='button-remove-list'>
-                                    <AiFillDelete />    
-                                </button>                    
-                            </Link>                                                                                
+            {items && !showWaiting && 
+                <div className='card-container'>
+                    {items.map((item) => (
+                        <div className='card' key={item.id}>
+                            <div>
+                                {item.name}
+                            </div>                                               
+                            <div>
+                                <Link to={`/Users/Edit/${item.id}`}>
+                                    <button className='button-edit-list'>
+                                        <AiFillEdit />
+                                    </button>                       
+                                </Link>                                                    
+                                <Link to={`/Users/Remove/${item.id}`}>
+                                    <button className='button-remove-list'>
+                                        <AiFillDelete />    
+                                    </button>                    
+                                </Link>                                                                                
+                            </div>                    
                         </div>                    
-                    </div>                    
-                ))}
-            </div>}
+                    ))}
+                </div>
+            }
 
         </div>
     );

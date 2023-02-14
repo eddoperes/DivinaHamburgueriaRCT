@@ -13,6 +13,12 @@ const ProvidersNew = () => {
     const { providersAdd } = useFetchProviders();
 
     //init
+    const item = {
+        id: 0,
+        name : '',
+        cnpj : ''	
+    } 
+
     const navigate = useNavigate();
 
     const configure = {
@@ -29,6 +35,7 @@ const ProvidersNew = () => {
         <div>
             <h1 className='h1-edit'>Novo cliente</h1>
             <Providers handlePersistence={handlePersistence} 
+                       item={item} 
                        configure={configure} >                            
             </Providers>
         </div>

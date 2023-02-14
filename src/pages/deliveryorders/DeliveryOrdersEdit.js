@@ -2,7 +2,7 @@
 import DeliveryOrders from './DeliveryOrders';
 
 //react hooks
-import { useState } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 //data hooks
@@ -13,28 +13,25 @@ import { BsHourglassSplit } from 'react-icons/bs';
 
 const DeliveryOrdersEdit = () => {
 
-    //state
-    const [showWaiting, setShowWaiting] = useState(false);
-
     //data
     const { id } = useParams();
     const { data: item,
             error: errorItem, 
+            waiting: showWaiting,
             deliveryOrdersEdit,
             deliveryOrdersGetById } = useFetchDeliveryOrders();
-    if (item === null) {deliveryOrdersGetById(id)};
 
     //init
+    useEffect(() => {      
+        deliveryOrdersGetById(id);
+    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const navigate = useNavigate();
 
     const configure = {
         disableInputs: false,
         showState: true
     }
-
-    setTimeout(() => {
-        setShowWaiting(true);
-    }, 1000);
 
     //func
     const handlePersistence = async (data) => {
@@ -49,14 +46,14 @@ const DeliveryOrdersEdit = () => {
 
     return (
         <div>
-            <h1 className='h1-edit'>Editar pedido salão</h1>
-            {(!item && !errorItem && showWaiting) && 
+            <h1 className='h1-edit'>Editar pedido delivery</h1>
+            {showWaiting && 
                 <p className='waiting-icon-edit'><BsHourglassSplit/></p>
             } 
-            {errorItem && 
+            {errorItem && !showWaiting &&
                 <p className='error-message-edit'>{errorItem}</p>
             }
-            {item &&
+            {item && !showWaiting &&
                 <DeliveryOrders handlePersistence={handlePersistence} 
                                 item={item} 
                                 configure={configure}>                                

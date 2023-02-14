@@ -2,7 +2,7 @@
 import Users from './Users';
 
 //react hooks
-import { useState } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 //data hooks
@@ -13,28 +13,25 @@ import { BsHourglassSplit } from 'react-icons/bs';
 
 const UsersEdit = () => {
 
-    //state
-    const [showWaiting, setShowWaiting] = useState(false);
-
     //data
     const { id } = useParams();
     const { data: item, 
             error: errorItem, 
+            waiting: showWaiting,
             usersGetById, 
             usersEdit } = useFetchUsers();
-    if (item === null) {usersGetById(id)};
 
     //init
+    useEffect(() => {      
+        usersGetById(id);
+    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const navigate = useNavigate();
 
     const configure = {
         disableInputs: false,
         showPassword: false,
     }
-
-    setTimeout(() => {
-        setShowWaiting(true);
-    }, 1000);
 
     //func
     const handlePersistence = async (data) => {
@@ -46,16 +43,16 @@ const UsersEdit = () => {
     return(
         <div>
             <h1 className='h1-edit'>Editar usuário</h1>
-            {(!item && !errorItem && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-edit'><BsHourglassSplit/></p>
             } 
-            {errorItem && 
+            {errorItem && !showWaiting &&
                 <p className='error-message-edit'>{errorItem}</p>
             }
-            {item &&
+            {item && !showWaiting &&
                 <Users handlePersistence={handlePersistence} 
-                           item={item} 
-                           configure={configure}>                                
+                       item={item} 
+                       configure={configure}>                                
                 </Users>
             }
         </div>

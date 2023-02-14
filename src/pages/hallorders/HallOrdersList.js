@@ -19,9 +19,7 @@ import AppMessageBox from '../../components/AppMessageBox';
 const HallOrdersList = () => {
 
     //state
-    const [code, setCode] = useState('');
-    const [showWaiting, setShowWaiting] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);    
+    const [code, setCode] = useState('');   
     const [showConfirmCanceled, setShowConfirmCanceled] = useState([]);
     const [showConfirmProgress, setShowConfirmProgress] = useState([]);
 
@@ -31,53 +29,39 @@ const HallOrdersList = () => {
     const codeRdbQqRef = useRef(null);
 
     //data
-    const { data: items, error, hallOrdersGetByCode, hallOrdersPatch, unauthorized: unauthorizedItem} = useFetchHallOrders();
+    const { data: items, error, hallOrdersGetByCode, hallOrdersPatch, unauthorized: unauthorizedItem, waiting: showWaiting} = useFetchHallOrders();
     const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
     //init
     const navigate = useNavigate();
 
-    useEffect(() => {          
-        
-        if (code === '' &&                         
-            items === null){
+    useEffect(() => {                  
 
-            if (code === localStorageGet("code") &&
-                code !== '')
-                return;            
+        if(localStorageGet("codeChecked") === "" &&
+            localStorageGet("codeQqChecked") === "")
+        {
+            localStorageSet("codeQqChecked", true);
+            codeRdbQqRef.current.checked = true;
+            codeTxtRef.current.disabled = true;                
+            return;
+        }     
 
-            if(localStorageGet("codeChecked") === "" &&
-               localStorageGet("codeQqChecked") === "")
-            {
-                localStorageSet("codeQqChecked", true);
-                codeRdbQqRef.current.checked = true;
-                codeTxtRef.current.disabled = true;                
-                return;
-            }     
-
-            setCode(localStorageGet("code"));            
-            if (localStorageGet("codeChecked") === true){
-                codeRdbRef.current.checked = true;
-                codeTxtRef.current.disabled = false;
-            }
-            if (localStorageGet("codeQqChecked") === true){
-                codeRdbQqRef.current.checked = true;
-                codeTxtRef.current.disabled = true;
-            }           
-
-            setTimeout(() => {
-                setShowWaiting(true);
-                setRefreshing(true);
-            }, 1000); 
-
-            var sendCode = 0;
-            if (codeRdbRef.current.checked)
-                sendCode = localStorageGet("code"); 
-            hallOrdersGetByCode(sendCode);
-            
+        setCode(localStorageGet("code"));            
+        if (localStorageGet("codeChecked") === true){
+            codeRdbRef.current.checked = true;
+            codeTxtRef.current.disabled = false;
         }
+        if (localStorageGet("codeQqChecked") === true){
+            codeRdbQqRef.current.checked = true;
+            codeTxtRef.current.disabled = true;
+        }           
+
+        var sendCode = 0;
+        if (codeRdbRef.current.checked)
+            sendCode = localStorageGet("code"); 
+        hallOrdersGetByCode(sendCode);
             
-    }, [localStorageGet]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {          
         if (unauthorizedItem){
@@ -103,17 +87,12 @@ const HallOrdersList = () => {
 
     async function  handleSubmit(e){
         e.preventDefault();
-        setTimeout(() => {
-            setShowWaiting(true);
-            setRefreshing(true);
-        }, 1000); 
 
         var sendCode = 0;
         if (codeRdbRef.current.checked)
              sendCode = code                      
         await hallOrdersGetByCode(sendCode);
 
-        setRefreshing(false);
         localStorageSet("code", code);
         localStorageSet("codeChecked", codeRdbRef.current.checked);
         localStorageSet("codeQqChecked", codeRdbQqRef.current.checked);
@@ -232,10 +211,10 @@ const HallOrdersList = () => {
                 </Link>     
             </div>
 
-            {(!items && (!error || refreshing) && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }            
-            {!items && error && !refreshing && 
+            {error && !showWaiting && 
                 <p className='error-message-list'>{error}</p>
             }
 
@@ -250,7 +229,7 @@ const HallOrdersList = () => {
             >
             </AppMessageBox>
 
-            {(items ) && <div className='card-container'>
+            {items && !showWaiting && <div className='card-container'>
 
                 {items.map((item) => (
                     <div className='card' key={item.id}>

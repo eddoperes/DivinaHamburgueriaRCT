@@ -5,6 +5,7 @@ import HallOrdersMenuItems from './HallOrdersMenuItems'
 import React from "react";
 import {findDOMNode} from 'react-dom';
 import ReactDOM from 'react-dom/client'
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from "react";
 
 //data hooks
@@ -26,7 +27,6 @@ const HallOrders = ({handlePersistence, item, configure}) => {
   const [state, setState] = useState(1);
   const [newItems, setNewItems] = useState([0]);
   const [elements, setElements] = useState([]);
-  const [showWaiting, setShowWaiting] = useState(false);
   
   //ref
   const inputRef = useRef(null);
@@ -34,61 +34,64 @@ const HallOrders = ({handlePersistence, item, configure}) => {
   //data
   const { data: customers, 
           error: errorCustomers, 
-          customersGetAll } = useFetchCustomers();  
-  if (customers === null) {customersGetAll()};  
+          waiting: showWaitingCustomer,
+          unauthorized: unauthorizedCustomer,
+          customersGetAll } = useFetchCustomers();    
   const { data: menuItemsRecipe, 
           error: errorMenuItemsRecipe, 
+          waiting: showWaitingMenuItemsRecipe,
+          unauthorized: unauthorizedMenuItemsRecipe,
           menuItemsRecipeGetAll } = useFetchMenuItemsRecipe();  
-  if (menuItemsRecipe === null) {menuItemsRecipeGetAll()};
   const { data: menuItemsResale, 
           error: errorMenuItemsResale, 
+          waiting: showWaitingMenuItemsResale,
+          unauthorized: unauthorizedMenuItemsResale,
           menuItemsResaleGetAll } = useFetchMenuItemsResale();  
-  if (menuItemsResale === null) {menuItemsResaleGetAll()};
 
   //init
+  const navigate = useNavigate();
+
   useEffect(() => {        
     
-    if (item !== null && item !== undefined && 
-        menuItemsRecipe !== null && menuItemsRecipe !== undefined &&
-        menuItemsResale !== null && menuItemsResale !== undefined)
-    {  
+    menuItemsRecipeGetAll()
+    menuItemsResaleGetAll()
+    customersGetAll()
 
-      if (total === 0){
-
-        setCustomerId(item.customerId);
-        setObservation(item.observation);
-        setTotal(item.total);
-        setState(item.state);
+    setCustomerId(item.customerId);
+    setObservation(item.observation);
+    setTotal(item.total);
+    setState(item.state);
+    setUserId(getUserId());
           
-        const data = [...newItems];
-        for (var i=0; i < item.hallOrderMenuItems.length; i++){             
-          data.push(data.length);            
+    const data = [...newItems];
+    for (var i=0; i < item.hallOrderMenuItems.length; i++){             
+      data.push(data.length);            
+    }
+    setNewItems(data);
+
+  }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+  
+    if (menuItemsRecipe?.length >= 0 &&
+        menuItemsResale?.length >= 0){
+      setTimeout(() => {
+        for (var k=0; k < item.hallOrderMenuItems.length; k++){               
+          popItem(k, item.hallOrderMenuItems[k]);
+        }  
+        if (inputRef.current !== null){              
+          AccordionOpen(inputRef.current);              
         }
-        setNewItems(data);
-
-        setTimeout(() => {
-          for (var i=0; i < item.hallOrderMenuItems.length; i++){               
-            popItem(i, item.hallOrderMenuItems[i]);
-          }          
-        }, 200); 
-
-      }           
-
+      }, 200); 
     }
 
-    setTimeout(() => {
-      if (inputRef.current !== null){              
-        AccordionOpen(inputRef.current);              
-      }
-    }, 200); 
+  }, [menuItemsRecipe?.length, menuItemsResale?.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    setUserId(getUserId());
-    
-  }, [item, menuItemsRecipe, menuItemsResale]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  setTimeout(() => {
-      setShowWaiting(true);
-  }, 1000);
+  useEffect(() => {          
+    if (unauthorizedCustomer || unauthorizedMenuItemsRecipe || unauthorizedMenuItemsResale){
+        navigate("/login");
+    }    
+  }, [unauthorizedCustomer, unauthorizedMenuItemsRecipe, unauthorizedMenuItemsResale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //func
   const getUserId = () => {
@@ -192,30 +195,33 @@ const HallOrders = ({handlePersistence, item, configure}) => {
   return (
     <div>
 
-      {(!menuItemsRecipe && !errorMenuItemsRecipe && showWaiting) && 
+      {showWaitingMenuItemsRecipe && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorMenuItemsRecipe && 
+      {errorMenuItemsRecipe && !showWaitingMenuItemsRecipe &&
         <p className='error-message-edit'>{errorMenuItemsRecipe}</p>
       } 
 
-      {(!menuItemsResale && !errorMenuItemsResale && showWaiting) && 
+      {showWaitingMenuItemsResale && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorMenuItemsResale && 
+      {errorMenuItemsResale && !showWaitingMenuItemsResale &&
         <p className='error-message-edit'>{errorMenuItemsResale}</p>
       } 
       
-      {(!customers && !errorCustomers && showWaiting) && 
+      {showWaitingCustomer && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorCustomers &&  
+      {errorCustomers && !showWaitingCustomer &&
         <p className='error-message-edit'>{errorCustomers}</p>
       } 
-      {customers && menuItemsRecipe && menuItemsResale &&
+
+      {item && customers && menuItemsRecipe && menuItemsResale &&
+       !showWaitingMenuItemsRecipe && !showWaitingMenuItemsResale && !showWaitingCustomer &&
+
         <form onSubmit={handleSubmit} className="form-edit">
 
-          {item &&
+          {item.id > 0 &&
             <label>Código
               <input type="number"
                     className='input-edit input-edit-number'

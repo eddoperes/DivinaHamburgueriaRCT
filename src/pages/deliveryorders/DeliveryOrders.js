@@ -5,6 +5,7 @@ import DeliveryOrdersMenuItems from './DeliveryOrdersMenuItems'
 import React from "react";
 import {findDOMNode} from 'react-dom';
 import ReactDOM from 'react-dom/client'
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from "react";
 
 //data hooks
@@ -27,7 +28,6 @@ const DeliveryOrders = ({handlePersistence, item, configure}) => {
   const [payment, setPayment] = useState(1);
   const [newItems, setNewItems] = useState([0]);
   const [elements, setElements] = useState([]);
-  const [showWaiting, setShowWaiting] = useState(false);
   
   //ref
   const inputRef = useRef(null);
@@ -35,62 +35,65 @@ const DeliveryOrders = ({handlePersistence, item, configure}) => {
   //data
   const { data: customers, 
           error: errorCustomers, 
+          waiting: showWaitingCustomer,
+          unauthorized: unauthorizedCustomer,
           customersGetAll } = useFetchCustomers();  
-  if (customers === null) {customersGetAll()};  
   const { data: menuItemsRecipe, 
           error: errorMenuItemsRecipe, 
+          waiting: showWaitingMenuItemsRecipe,
+          unauthorized: unauthorizedMenuItemsRecipe,
           menuItemsRecipeGetAll } = useFetchMenuItemsRecipe();  
-  if (menuItemsRecipe === null) {menuItemsRecipeGetAll()};
   const { data: menuItemsResale, 
           error: errorMenuItemsResale, 
+          waiting: showWaitingMenuItemsResale,
+          unauthorized: unauthorizedMenuItemsResale,
           menuItemsResaleGetAll } = useFetchMenuItemsResale();  
-  if (menuItemsResale === null) {menuItemsResaleGetAll()};
 
   //init
+  const navigate = useNavigate();
+
   useEffect(() => {        
+
+    menuItemsRecipeGetAll()
+    menuItemsResaleGetAll()
+    customersGetAll()
     
-    if (item !== null && item !== undefined && 
-        menuItemsRecipe !== null && menuItemsRecipe !== undefined &&
-        menuItemsResale !== null && menuItemsResale !== undefined)
-    {  
-
-      if (total === 0){
-
-        setCustomerId(item.customerId === null ? '' : item.customerId);
-        setObservation(item.observation);
-        setTotal(item.total);
-        setState(item.state);
-        setPayment(item.payment);
+    setCustomerId(item.customerId === null ? '' : item.customerId);
+    setObservation(item.observation);
+    setTotal(item.total);
+    setState(item.state);
+    setPayment(item.payment);
+    setUserId(getUserId());
           
-        const data = [...newItems];
-        for (var i=0; i < item.deliveryOrderMenuItems.length; i++){             
-          data.push(data.length);            
+    const data = [...newItems];
+    for (var i=0; i < item.deliveryOrderMenuItems.length; i++){             
+      data.push(data.length);            
+    }
+    setNewItems(data);
+      
+  }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps  
+
+  useEffect(() => {
+  
+    if (menuItemsRecipe?.length >= 0 &&
+        menuItemsResale?.length >= 0){
+      setTimeout(() => {
+        for (var k=0; k < item.deliveryOrderMenuItems.length; k++){               
+          popItem(k, item.deliveryOrderMenuItems[k]);
+        }  
+        if (inputRef.current !== null){              
+          AccordionOpen(inputRef.current);              
         }
-        setNewItems(data);
-
-        setTimeout(() => {
-          for (var i=0; i < item.deliveryOrderMenuItems.length; i++){               
-            popItem(i, item.deliveryOrderMenuItems[i]);
-          }          
-        }, 200); 
-
-      }           
-
+      }, 200); 
     }
 
-    setTimeout(() => {
-      if (inputRef.current !== null){              
-        AccordionOpen(inputRef.current);              
-      }
-    }, 200); 
+  }, [menuItemsRecipe?.length, menuItemsResale?.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    setUserId(getUserId());
-    
-  }, [item, menuItemsRecipe, menuItemsResale]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  setTimeout(() => {
-      setShowWaiting(true);
-  }, 1000);
+  useEffect(() => {          
+    if (unauthorizedCustomer || unauthorizedMenuItemsRecipe || unauthorizedMenuItemsResale){
+        navigate("/login");
+    }    
+  }, [unauthorizedCustomer, unauthorizedMenuItemsRecipe, unauthorizedMenuItemsResale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //func
   const getUserId = () => {
@@ -195,30 +198,33 @@ const DeliveryOrders = ({handlePersistence, item, configure}) => {
   return (
     <div>
 
-      {(!menuItemsRecipe && !errorMenuItemsRecipe && showWaiting) && 
+      {showWaitingMenuItemsRecipe && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorMenuItemsRecipe && 
+      {errorMenuItemsRecipe && !showWaitingMenuItemsRecipe &&
         <p className='error-message-edit'>{errorMenuItemsRecipe}</p>
       } 
 
-      {(!menuItemsResale && !errorMenuItemsResale && showWaiting) && 
+      {showWaitingMenuItemsResale && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorMenuItemsResale && 
+      {errorMenuItemsResale && !showWaitingMenuItemsResale &&
         <p className='error-message-edit'>{errorMenuItemsResale}</p>
       } 
       
-      {(!customers && !errorCustomers && showWaiting) && 
+      {showWaitingCustomer && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorCustomers &&  
+      {errorCustomers && !showWaitingCustomer &&
         <p className='error-message-edit'>{errorCustomers}</p>
       } 
-      {customers && menuItemsRecipe && menuItemsResale &&
+
+      {item && customers && menuItemsRecipe && menuItemsResale &&
+       !showWaitingMenuItemsRecipe && !showWaitingMenuItemsResale && !showWaitingCustomer &&
+
         <form onSubmit={handleSubmit} className="form-edit">
 
-          {item &&
+          {item.id > 0 &&
             <label>Código
               <input type="number"
                      className='input-edit input-edit-number'
@@ -245,7 +251,6 @@ const DeliveryOrders = ({handlePersistence, item, configure}) => {
                 ))}
             </select>          
           </label>
-
 
           <label>Observação          
             <textarea value={observation}

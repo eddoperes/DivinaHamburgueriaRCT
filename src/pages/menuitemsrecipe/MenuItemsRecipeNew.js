@@ -13,6 +13,14 @@ const MenuItemsRecipeNew = () => {
   const { menuItemsRecipeAdd } = useFetchMenuItemsRecipe();
 
   //init
+  const item = {
+    id: 0,
+    name : '',
+    description : '',
+    photo : '',
+    ingredients: []
+} 
+
   const navigate = useNavigate();
 
   const configure = {
@@ -29,7 +37,8 @@ const MenuItemsRecipeNew = () => {
     <div>
       <h1 className='h1-edit'>Novo item do cardápio receita</h1>
       <MenuItemsRecipe handlePersistence={handlePersistence} 
-                      configure={configure} >                            
+                       item={item} 
+                       configure={configure} >                            
       </MenuItemsRecipe>
     </div>
   )

@@ -24,62 +24,53 @@ const Menus = ({handlePersistence, item, configure}) => {
 
   const [newItems, setNewItems] = useState([0]);
   const [elements, setElements] = useState([]);
-  const [showWaiting, setShowWaiting] = useState(false);
 
   //ref
   const inputRef = useRef(null);
 
   //data
   const { data: menuItemsRecipe, 
-          error: errorMenuItemRecipe, 
-          menuItemsRecipeGetAll } = useFetchMenuItemsRecipe();  
-  if (menuItemsRecipe === null) {menuItemsRecipeGetAll()};  
+          error: errorMenuItemRecipe,
+          waiting: showWaitingMenuItemRecipe, 
+          menuItemsRecipeGetAll } = useFetchMenuItemsRecipe();   
   const { data: menuItemsResale, 
           error: errorMenuItemResale, 
+          waiting: showWaitingMenuItemResale,
           menuItemsResaleGetAll } = useFetchMenuItemsResale();  
-  if (menuItemsResale === null) {menuItemsResaleGetAll()};
 
   //init
-  setTimeout(() => {
-    setShowWaiting(true);
-  }, 1000);
-
   useEffect(() => {             
-    if (item !== null && item !== undefined &&
-        menuItemsRecipe !== null && menuItemsRecipe !== null &&
-        menuItemsResale !== null && menuItemsResale !== null)
-    {   
-      
-        if (name === ''){
-      
-          setName(item.name);
-          setDescription(item.description);
-          setState(item.state);
+    
+    menuItemsRecipeGetAll();
+    menuItemsResaleGetAll();
 
-          const data = [...newItems];
-          for (var i=0; i < item.menuMenuItems.length; i++){             
-            data.push(data.length);            
-          }
-          setNewItems(data);
+    setName(item.name);
+    setDescription(item.description);
+    setState(item.state);
 
-          setTimeout(() => {
-            for (var i=0; i < item.menuMenuItems.length; i++){               
-              popItem(i, item.menuMenuItems[i]);
-            }          
-          }, 200); 
-
-        }
+    const data = [...newItems];
+    for (var i=0; i < item.menuMenuItems.length; i++){             
+      data.push(data.length);            
     }
-    setTimeout(() => {
-        if (inputRef.current !== null){              
-            AccordionOpen(inputRef.current);    
-        }
-    }, 200); 
-  }, [item, menuItemsRecipe, menuItemsResale]); // eslint-disable-line react-hooks/exhaustive-deps
+    setNewItems(data);
 
-  setTimeout(() => {
-    setShowWaiting(true);
-  }, 1000);
+  }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+  
+    if (menuItemsRecipe?.length >= 0 &&
+        menuItemsResale?.length >= 0){
+      setTimeout(() => {
+        for (var i=0; i < item.menuMenuItems.length; i++){               
+          popItem(i, item.menuMenuItems[i]);
+        }    
+        if (inputRef.current !== null){              
+          AccordionOpen(inputRef.current);              
+        }
+      }, 200); 
+    }
+
+  }, [menuItemsRecipe?.length, menuItemsResale?.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //func
   const handleResetTextValidation = async (e) => {
@@ -182,23 +173,22 @@ const Menus = ({handlePersistence, item, configure}) => {
   return (
     <div>        
 
-      {
-      (!menuItemsRecipe && !errorMenuItemRecipe && showWaiting) && 
+      {showWaitingMenuItemRecipe && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorMenuItemRecipe && 
+      {errorMenuItemRecipe && !showWaitingMenuItemRecipe &&
         <p className='error-message-edit'>{errorMenuItemRecipe}</p>
       } 
 
-      {
-      (!menuItemsResale && !errorMenuItemResale && showWaiting) && 
+      {showWaitingMenuItemResale && 
         <p className='waiting-icon-edit'><BsHourglassSplit/></p>
       }  
-      {errorMenuItemResale && 
+      {errorMenuItemResale && !showWaitingMenuItemResale &&
         <p className='error-message-edit'>{errorMenuItemResale}</p>
       }
 
-      {menuItemsRecipe && menuItemsResale && 
+      {item && menuItemsRecipe && menuItemsResale && 
+       !showWaitingMenuItemRecipe && !showWaitingMenuItemResale &&
         <form onSubmit={handleSubmit} className="form-edit">
       
           <label>Nome
@@ -297,7 +287,6 @@ const Menus = ({handlePersistence, item, configure}) => {
       }
     </div>
   )
-
 
 }
 

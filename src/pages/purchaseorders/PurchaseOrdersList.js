@@ -21,9 +21,6 @@ const PurchaseOrdersList = () => {
 
     //state
     const [providerId, setProviderId] = useState(1);
-    const [showWaiting, setShowWaiting] = useState(false);
-    const [showWaitingProviders, setShowWaitingProviders] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
     const [showConfirmPayment, setShowConfirmPayment] = useState([]);
     const [showConfirmCanceled, setShowConfirmCanceled] = useState([]);
     const [showConfirmProgress, setShowConfirmProgress] = useState([]);
@@ -34,14 +31,11 @@ const PurchaseOrdersList = () => {
     const providerRdbQqRef = useRef(null);
 
     //data
-    const { data: providers, error: errorProviders, unauthorized: unauthorizedProviders, providersGetAll} = useFetchProviders();    
+    const { data: providers, error: errorProviders, unauthorized: unauthorizedProviders, waiting: showWaitingProviders, providersGetAll} = useFetchProviders();    
     if (providers === null) {
-        setTimeout(() => {
-            setShowWaitingProviders(true);
-        }, 1000);
         providersGetAll();        
     }
-    const { data: items, error, purchaseOrdersGetByProvider, purchaseOrdersPatch, unauthorized: unauthorizedItem} = useFetchPurchaseOrders();
+    const { data: items, error, purchaseOrdersGetByProvider, purchaseOrdersPatch, unauthorized: unauthorizedItem, waiting: showWaiting} = useFetchPurchaseOrders();
     const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
     //init
@@ -49,39 +43,31 @@ const PurchaseOrdersList = () => {
 
     useEffect(() => {          
         
-        if (providers !== null &&                         
-            items === null){
+        if(localStorageGet("providerIdChecked") === "" &&
+            localStorageGet("providerIdQqChecked") === "")
+        {
+            localStorageSet("providerIdQqChecked", true);
+            providerRdbQqRef.current.checked = true;
+            providerSelRef.current.disabled = true;                
+            return;
+        }     
 
-            if (providerId === localStorageGet("providerId"))
-                return;
-
-            if(localStorageGet("providerIdChecked") === "" &&
-               localStorageGet("providerIdQqChecked") === "")
-            {
-                localStorageSet("providerIdQqChecked", true);
-                providerRdbQqRef.current.checked = true;
-                providerSelRef.current.disabled = true;                
-                return;
-            }     
-
-            setProviderId(localStorageGet("providerId"));            
-            if (localStorageGet("providerIdChecked") === true){
-                providerRdbRef.current.checked = true;
-                providerSelRef.current.disabled = false;
-            }
-            if (localStorageGet("providerIdQqChecked") === true){
-                providerRdbQqRef.current.checked = true;
-                providerSelRef.current.disabled = true;
-            }           
-
-            var sendProviderId = 0;
-            if (providerRdbRef.current.checked)
-                sendProviderId = localStorageGet("providerId"); 
-            purchaseOrdersGetByProvider(sendProviderId);
-            
+        setProviderId(localStorageGet("providerId"));            
+        if (localStorageGet("providerIdChecked") === true){
+            providerRdbRef.current.checked = true;
+            providerSelRef.current.disabled = false;
         }
+        if (localStorageGet("providerIdQqChecked") === true){
+            providerRdbQqRef.current.checked = true;
+            providerSelRef.current.disabled = true;
+        }           
+
+        var sendProviderId = 0;
+        if (providerRdbRef.current.checked)
+            sendProviderId = localStorageGet("providerId"); 
+        purchaseOrdersGetByProvider(sendProviderId);
             
-    }, [localStorageGet]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {          
         if (unauthorizedItem || unauthorizedProviders){
@@ -94,8 +80,7 @@ const PurchaseOrdersList = () => {
         Quotation: 1,
         Issued: 2,
         Canceled: 3,
-        Arrived: 4,
-        Stocked: 5
+        Arrived: 4
     };
 
     const paymentEnum = {
@@ -116,8 +101,6 @@ const PurchaseOrdersList = () => {
             return "Cancelado"
         else if (number === stateEnum.Arrived)
             return "Entregue" 
-        else if (number === stateEnum.Stocked)
-            return "Estocado" 
     }
 
     function GetPaymentDescription(number){
@@ -128,19 +111,13 @@ const PurchaseOrdersList = () => {
     }
 
     async function  handleSubmit(e){
-        e.preventDefault();
-        setTimeout(() => {
-            setShowWaiting(true);
-            setRefreshing(true);
-            //console.log('passo8')
-        }, 1000); 
+        e.preventDefault();        
 
         var sendProviderId = 0;
         if (providerRdbRef.current.checked)
              sendProviderId = providerId                      
         await purchaseOrdersGetByProvider(sendProviderId);
 
-        setRefreshing(false);
         localStorageSet("providerId", providerId);
         localStorageSet("providerIdChecked", providerRdbRef.current.checked);
         localStorageSet("providerIdQqChecked", providerRdbQqRef.current.checked);
@@ -288,16 +265,16 @@ const PurchaseOrdersList = () => {
                 </Link>     
             </div>
 
-            {(!items && (!error || refreshing) && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }            
-            {!items && error && !refreshing && 
+            {error && !showWaiting && 
                 <p className='error-message-list'>{error}</p>
             }
-            {(!providers && (!errorProviders || refreshing) && showWaitingProviders) && 
+            {showWaitingProviders && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }  
-            {!providers && errorProviders && !refreshing &&  
+            {errorProviders && !showWaitingProviders &&  
                 <p className='error-message-list'>{errorProviders}</p>
             }
 
@@ -316,53 +293,54 @@ const PurchaseOrdersList = () => {
             >
             </AppMessageBox>
 
-            {(items && providers) && <div className='card-container'>
-
-                {items.map((item) => (
-                    <div className='card' key={item.id}>
-                        <div>
-                            {GetProviderName(item.providerId)}
-                        </div>                        
-                        <div>
-                            {item.observation}                                           
-                        </div>   
-                        <div>
-                            {GetStateDescription(item.state)}                                           
-                        </div> 
-                        <div>
-                            {GetPaymentDescription(item.payment)}                                           
-                        </div> 
-                        <div>
-                            {new Intl.NumberFormat('pt-BR', 
-                                {
-                                    style: 'currency',
-                                    currency: 'BRL'
-                                }
-                            ).format(item.total)}                            
-                        </div> 
-                        <div>
-                            <Link to={`/PurchaseOrders/Edit/${item.id}`}>
-                                <button className='button-edit-list'>
-                                    <AiFillEdit />
+            {items && providers && 
+             !showWaiting && !showWaitingProviders &&  
+                <div className='card-container'>
+                    {items.map((item) => (
+                        <div className='card' key={item.id}>
+                            <div>
+                                {GetProviderName(item.providerId)}
+                            </div>                        
+                            <div>
+                                {item.observation}                                           
+                            </div>   
+                            <div>
+                                {GetStateDescription(item.state)}                                           
+                            </div> 
+                            <div>
+                                {GetPaymentDescription(item.payment)}                                           
+                            </div> 
+                            <div>
+                                {new Intl.NumberFormat('pt-BR', 
+                                    {
+                                        style: 'currency',
+                                        currency: 'BRL'
+                                    }
+                                ).format(item.total)}                            
+                            </div> 
+                            <div>
+                                <Link to={`/PurchaseOrders/Edit/${item.id}`}>
+                                    <button className='button-edit-list'>
+                                        <AiFillEdit />
+                                    </button>    
+                                </Link> 
+                                <button className='button-payment-list' 
+                                        onClick={(e) => handleConfirmPayment(e, item.id, item.state, item.payment)}>
+                                    <BsCurrencyDollar />
+                                </button>           
+                                <button className='button-remove-list'
+                                        onClick={(e) => handleConfirmCanceled(e, item.id, item.state, item.payment)}>
+                                    <GiCancel />
                                 </button>    
-                            </Link> 
-                            <button className='button-payment-list' 
-                                    onClick={(e) => handleConfirmPayment(e, item.id, item.state, item.payment)}>
-                                <BsCurrencyDollar />
-                            </button>           
-                            <button className='button-remove-list'
-                                    onClick={(e) => handleConfirmCanceled(e, item.id, item.state, item.payment)}>
-                                <GiCancel />
-                            </button>    
-                            <button className='button-progress-list'
-                                    onClick={(e) => handleConfirmProgress(e, item.id, item.state, item.payment)}>
-                                <GoArrowRight />
-                            </button>       
-                        </div>       
-                    </div>                    
-                )
-            )}
-            </div>}
+                                <button className='button-progress-list'
+                                        onClick={(e) => handleConfirmProgress(e, item.id, item.state, item.payment)}>
+                                    <GoArrowRight />
+                                </button>       
+                            </div>       
+                        </div>                    
+                    ))}
+                </div>
+            }
 
         </div>
     )

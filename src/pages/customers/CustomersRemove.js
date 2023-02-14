@@ -2,8 +2,8 @@
 import Customers from './Customers';
 
 //react hooks
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 //data hooks
 import { useFetchCustomers } from "../../hooks/useFetchCustomers";
@@ -13,28 +13,25 @@ import { BsHourglassSplit } from 'react-icons/bs';
 
 const CustomersRemove = () => {
 
-    //state
-    const [showWaiting, setShowWaiting] = useState(false);
-
     //data
     const { id } = useParams();
     const { data: item, 
             error: errorItem, 
+            waiting: showWaiting,
             customersGetById, 
             customersRemove } = useFetchCustomers();
-    if (item === null) {customersGetById(id)};
 
     //init
+    useEffect(() => {      
+        customersGetById(id);
+    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const navigate = useNavigate();
 
     const configure = {
         disableInputs: true,
     }
     
-    setTimeout(() => {
-        setShowWaiting(true);
-    }, 1000);
-
     //func
     const handlePersistence = async (data) => {        
         data.id = id;     
@@ -45,13 +42,13 @@ const CustomersRemove = () => {
     return(
         <div>
             <h1 className='h1-edit'>Remover cliente</h1>
-            {(!item && !errorItem && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon'><BsHourglassSplit/></p>
             } 
-            {errorItem && 
+            {errorItem && !showWaiting &&
                 <p className='error-message'>{errorItem}</p>
             }
-            {item &&
+            {item && !showWaiting &&
                 <Customers handlePersistence={handlePersistence} 
                            item={item} 
                            configure={configure}>                                

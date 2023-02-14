@@ -16,11 +16,6 @@ const InventoryList = () => {
 
     //state
     const [eatableId, setEatableId] = useState('0');
-    const [showWaiting, setShowWaiting] = useState(false);
-    const [showWaitingUnits, setShowWaitingUnits] = useState(false);
-    const [showWaitingInventoryItems, setShowWaitingInventoryItems] = useState(false);
-    const [showWaitingEatables, setShowWaitingEatables] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
 
     //ref
     const eatableSelRef = useRef(null);
@@ -28,28 +23,16 @@ const InventoryList = () => {
     const eatableRdbQqRef = useRef(null);
 
     //data
-    const { data: units, error: errorUnits, unitsGetAll, unauthorized: unauthorizedUnits} = useFetchUnits();    
-    if (units === null) {
-        setTimeout(() => {
-            setShowWaitingUnits(true);
-        }, 1000);
-        unitsGetAll();        
-    }
-    const { data: inventoryItems, error: errorInventoryItems, inventoryItemsGetAll} = useFetchInventoryItems();    
+    const { data: units, error: errorUnits, unitsGetAll, unauthorized: unauthorizedUnits, waiting: showWaitingUnits} = useFetchUnits();    
+    const { data: inventoryItems, error: errorInventoryItems, waiting: showWaitingInventoryItems, inventoryItemsGetAll} = useFetchInventoryItems();    
     if (inventoryItems === null) {
-        setTimeout(() => {
-            setShowWaitingInventoryItems(true);
-        }, 1000);
         inventoryItemsGetAll();        
     }
-    const { data: eatables, error: errorEatables, inventoryItemsGetDistinctNames} = useFetchInventoryItems();    
+    const { data: eatables, error: errorEatables, inventoryItemsGetDistinctNames, waiting: showWaitingEatables} = useFetchInventoryItems();    
     if (eatables === null) {
-        setTimeout(() => {
-            setShowWaitingEatables(true);
-        }, 1000);
         inventoryItemsGetDistinctNames();        
     }
-    const {data: items, error, inventoryGetByEatable, unauthorized: unauthorizedItem} = useFetchInventories();
+    const {data: items, error, inventoryGetByEatable, unauthorized: unauthorizedItem, waiting: showWaiting} = useFetchInventories();
     const {set: localStorageSet , get: localStorageGet} = useFetchLocalStorage();
 
     //init
@@ -57,41 +40,33 @@ const InventoryList = () => {
 
     useEffect(() => {          
 
-        if (units !== null && 
-            eatables !== null && 
-            inventoryItems !== null && 
-            items === null){
+        unitsGetAll();
 
-            if (eatableId === localStorageGet("eatableId"))
-                return;
-
-            if(localStorageGet("eatableIdChecked") === "" &&
-               localStorageGet("eatableIdQqChecked") === "")
-             {
-                 localStorageSet("eatableIdQqChecked", true);
-                 eatableRdbQqRef.current.checked = true;
-                 eatableSelRef.current.disabled = true;                 
-                 return;
-             }     
-
-            setEatableId(localStorageGet("eatableId"));
-            if (localStorageGet("eatableIdChecked") === true){
-                eatableRdbRef.current.checked = true;
-                eatableSelRef.current.disabled = false;
-            }
-            if (localStorageGet("eatableIdQqChecked") === true){
+        if(localStorageGet("eatableIdChecked") === "" &&
+            localStorageGet("eatableIdQqChecked") === "")
+            {
+                localStorageSet("eatableIdQqChecked", true);
                 eatableRdbQqRef.current.checked = true;
-                eatableSelRef.current.disabled = true;
-            }
+                eatableSelRef.current.disabled = true;                 
+                return;
+            }     
 
-            var sendEatableId = 0;
-            if (eatableRdbRef.current.checked)
-                sendEatableId = localStorageGet("eatableId");
-            inventoryGetByEatable(sendEatableId);
-            
+        setEatableId(localStorageGet("eatableId"));
+        if (localStorageGet("eatableIdChecked") === true){
+            eatableRdbRef.current.checked = true;
+            eatableSelRef.current.disabled = false;
         }
-            
-    }, [localStorageGet]); // eslint-disable-line react-hooks/exhaustive-deps
+        if (localStorageGet("eatableIdQqChecked") === true){
+            eatableRdbQqRef.current.checked = true;
+            eatableSelRef.current.disabled = true;
+        }
+
+        var sendEatableId = 0;
+        if (eatableRdbRef.current.checked)
+            sendEatableId = localStorageGet("eatableId");
+        inventoryGetByEatable(sendEatableId);
+                        
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {          
         if (unauthorizedItem || unauthorizedUnits){
@@ -117,18 +92,14 @@ const InventoryList = () => {
     }
 
     async function  handleSubmit(e){
-        e.preventDefault();
-        setTimeout(() => {
-            setShowWaiting(true);
-            setRefreshing(true);
-        }, 1000);        
+        e.preventDefault();        
 
         var sendEatableId = 0;
         if (eatableRdbRef.current.checked)
             sendEatableId = eatableId
 
         await inventoryGetByEatable(sendEatableId);
-        setRefreshing(false);
+
         localStorageSet("eatableId", eatableId);
         localStorageSet("eatableIdChecked", eatableRdbRef.current.checked);
         localStorageSet("eatableIdQqChecked", eatableRdbQqRef.current.checked);
@@ -201,35 +172,37 @@ const InventoryList = () => {
 
             </form>
 
-            {(!items && (!error || refreshing) && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }            
-            {!items && error && !refreshing && 
+            {error && !showWaiting && 
                 <p className='error-message-list'>{error}</p>
             }
 
-            {(!inventoryItems && (!errorInventoryItems || refreshing) && showWaitingInventoryItems) && 
+            {showWaitingInventoryItems && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }  
-            {!inventoryItems && errorInventoryItems && !refreshing &&  
+            {errorInventoryItems && !showWaitingInventoryItems &&  
                 <p className='error-message-list'>{errorInventoryItems}</p>
             }
 
-            {(!units && (!errorUnits || refreshing) && showWaitingUnits) && 
+            {showWaitingUnits && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }  
-            {!units && errorUnits && !refreshing &&  
+            {errorUnits && !showWaitingUnits &&  
                 <p className='error-message-list'>{errorUnits}</p>
             }
 
-            {(!eatables && (!errorEatables || refreshing) && showWaitingEatables) && 
+            {showWaitingEatables && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }  
-            {!eatables && errorEatables && !refreshing &&  
+            {errorEatables && !showWaitingEatables &&  
                 <p className='error-message-list'>{errorEatables}</p>
             }
                 
-            {(items && inventoryItems && units) && 
+            {items && inventoryItems && units && 
+             !showWaiting && !showWaitingInventoryItems &&  
+             !showWaitingUnits && !showWaitingEatables &&  
                 <div className='card-container'>            
                     {items.map((item) => (
                         <div className='card' key={item.id}>

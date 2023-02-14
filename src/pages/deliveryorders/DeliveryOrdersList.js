@@ -19,9 +19,7 @@ import AppMessageBox from '../../components/AppMessageBox';
 const DeliveryOrdersList = () => {
 
     //state
-    const [code, setCode] = useState('');
-    const [showWaiting, setShowWaiting] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);    
+    const [code, setCode] = useState('');   
     const [showConfirmPayment, setShowConfirmPayment] = useState([]);
     const [showConfirmCanceled, setShowConfirmCanceled] = useState([]);
     const [showConfirmProgress, setShowConfirmProgress] = useState([]);
@@ -32,53 +30,39 @@ const DeliveryOrdersList = () => {
     const codeRdbQqRef = useRef(null);
 
     //data
-    const { data: items, error, deliveryOrdersGetByCode, deliveryOrdersPatch, unauthorized: unauthorizedItem} = useFetchDeliveryOrders();
+    const { data: items, error, deliveryOrdersGetByCode, deliveryOrdersPatch, unauthorized: unauthorizedItem, waiting: showWaiting} = useFetchDeliveryOrders();
     const { set: localStorageSet , get: localStorageGet } = useFetchLocalStorage();
 
     //init
     const navigate = useNavigate();
 
     useEffect(() => {          
-        
-        if (code === '' &&                         
-            items === null){
+                 
+        if(localStorageGet("deliverycodeChecked") === "" &&
+            localStorageGet("deliverycodeQqChecked") === "")
+        {
+            localStorageSet("deliverycodeQqChecked", true);
+            codeRdbQqRef.current.checked = true;
+            codeTxtRef.current.disabled = true;                
+            return;
+        }     
 
-            if (code === localStorageGet("deliverycode") &&
-                code !== '')
-                return;            
-
-            if(localStorageGet("deliverycodeChecked") === "" &&
-               localStorageGet("deliverycodeQqChecked") === "")
-            {
-                localStorageSet("deliverycodeQqChecked", true);
-                codeRdbQqRef.current.checked = true;
-                codeTxtRef.current.disabled = true;                
-                return;
-            }     
-
-            setCode(localStorageGet("deliverycode"));            
-            if (localStorageGet("deliverycodeChecked") === true){
-                codeRdbRef.current.checked = true;
-                codeTxtRef.current.disabled = false;
-            }
-            if (localStorageGet("deliverycodeQqChecked") === true){
-                codeRdbQqRef.current.checked = true;
-                codeTxtRef.current.disabled = true;
-            }           
-
-            setTimeout(() => {
-                setShowWaiting(true);
-                setRefreshing(true);
-            }, 1000); 
-
-            var sendCode = 0;
-            if (codeRdbRef.current.checked)
-                sendCode = localStorageGet("deliverycode"); 
-            deliveryOrdersGetByCode(sendCode);
-            
+        setCode(localStorageGet("deliverycode"));            
+        if (localStorageGet("deliverycodeChecked") === true){
+            codeRdbRef.current.checked = true;
+            codeTxtRef.current.disabled = false;
         }
-            
-    }, [localStorageGet]); // eslint-disable-line react-hooks/exhaustive-deps
+        if (localStorageGet("deliverycodeQqChecked") === true){
+            codeRdbQqRef.current.checked = true;
+            codeTxtRef.current.disabled = true;
+        }           
+
+        var sendCode = 0;
+        if (codeRdbRef.current.checked)
+            sendCode = localStorageGet("deliverycode"); 
+        deliveryOrdersGetByCode(sendCode);
+                        
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {          
         if (unauthorizedItem){
@@ -119,17 +103,12 @@ const DeliveryOrdersList = () => {
 
     async function  handleSubmit(e){
         e.preventDefault();
-        setTimeout(() => {
-            setShowWaiting(true);
-            setRefreshing(true);
-        }, 1000); 
 
         var sendCode = 0;
         if (codeRdbRef.current.checked)
              sendCode = code                      
         await deliveryOrdersGetByCode(sendCode);
 
-        setRefreshing(false);
         localStorageSet("deliverycode", code);
         localStorageSet("deliverycodeChecked", codeRdbRef.current.checked);
         localStorageSet("deliverycodeQqChecked", codeRdbQqRef.current.checked);
@@ -271,10 +250,10 @@ const DeliveryOrdersList = () => {
                 </Link>     
             </div>
 
-            {(!items && (!error || refreshing) && showWaiting) && 
+            {showWaiting && 
                 <p className='waiting-icon-list'><BsHourglassSplit/></p>
             }            
-            {!items && error && !refreshing && 
+            {error && !showWaiting  && 
                 <p className='error-message-list'>{error}</p>
             }
 
@@ -293,7 +272,7 @@ const DeliveryOrdersList = () => {
             >
             </AppMessageBox>
 
-            {(items ) && <div className='card-container'>
+            {items && !showWaiting && <div className='card-container'>
 
                 {items.map((item) => (
                     <div className='card' key={item.id}>

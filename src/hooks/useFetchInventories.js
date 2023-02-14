@@ -6,7 +6,7 @@ export const useFetchInventories = () => {
 
     const { url } = useContext(MainContext);
 
-    const {data, error, unauthorized,
+    const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
            apiAdd, apiEdit,
            apiRemove} = useFetchApi();
@@ -35,7 +35,7 @@ export const useFetchInventories = () => {
         await apiRemove(`${url}/inventories`, id);
     }
 
-    return {data, error, unauthorized,
+    return {data, error, unauthorized, waiting,
             inventoryGetAll, 
             inventoryGetByEatable,
             inventoryGetById, 

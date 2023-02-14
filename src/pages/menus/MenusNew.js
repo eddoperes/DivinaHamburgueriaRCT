@@ -13,6 +13,14 @@ const MenusNew = () => {
   const { menusAdd } = useFetchMenus();
 
   //init
+  const item = {
+    id: 0,
+    name : '',
+    description : '',
+    state : 0,
+    menuMenuItems: []
+  } 
+
   const navigate = useNavigate();
 
   const configure = {
@@ -29,7 +37,8 @@ const MenusNew = () => {
     <div>
       <h1 className='h1-edit'>Novo cardápio</h1>
       <Menus handlePersistence={handlePersistence} 
-                       configure={configure} >                            
+             item={item} 
+             configure={configure} >                            
       </Menus>
     </div>
   )
