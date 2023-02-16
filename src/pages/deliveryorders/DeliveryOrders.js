@@ -1,12 +1,12 @@
 //grid component
-import DeliveryOrdersMenuItems from './DeliveryOrdersMenuItems'
+import DeliveryOrdersMenuItems from './DeliveryOrdersMenuItems';
+import AppAccordion from '../../components/AppAccordion';
 
 //react hooks
 import React from "react";
-import {findDOMNode} from 'react-dom';
 import ReactDOM from 'react-dom/client'
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 //data hooks
 import { useFetchCustomers } from "../../hooks/useFetchCustomers";
@@ -15,7 +15,6 @@ import { useFetchMenuItemsResale } from "../../hooks/useFetchMenuItemsResale";
 
 //icons
 import { BsHourglassSplit } from 'react-icons/bs';
-import { BiDownArrow, BiUpArrow } from 'react-icons/bi';
 
 const DeliveryOrders = ({handlePersistence, item, configure}) => {
 
@@ -28,9 +27,6 @@ const DeliveryOrders = ({handlePersistence, item, configure}) => {
   const [payment, setPayment] = useState(1);
   const [newItems, setNewItems] = useState([0]);
   const [elements, setElements] = useState([]);
-  
-  //ref
-  const inputRef = useRef(null);
 
   //data
   const { data: customers, 
@@ -81,9 +77,6 @@ const DeliveryOrders = ({handlePersistence, item, configure}) => {
         for (var k=0; k < item.deliveryOrderMenuItems.length; k++){               
           popItem(k, item.deliveryOrderMenuItems[k]);
         }  
-        if (inputRef.current !== null){              
-          AccordionOpen(inputRef.current);              
-        }
       }, 200); 
     }
 
@@ -134,37 +127,6 @@ const DeliveryOrders = ({handlePersistence, item, configure}) => {
       data[number] = getItem    
     }
     setElements(data);
-  }
-
-  function handleAccordionClick(e){
-    e.preventDefault();    
-    var target = e.target; 
-    for(var i=0; i<3; i++){
-      var up = findDOMNode(target).getElementsByClassName('accordion-up'); 
-      var down = findDOMNode(target).getElementsByClassName('accordion-down'); 
-      if (up.length === 0) {target = target.parentNode;} else {break};      
-    }
-    target.classList.toggle("accordion-active");
-    var panel = target.nextElementSibling;
-    if (panel.style.display === "block") {
-      panel.style.display = "none";
-      up[0].style.display = "none";
-      down[0].style.display = "block";
-    } else {
-      panel.style.display = "block";
-      up[0].style.display = "block";
-      down[0].style.display = "none";
-    }
-  } 
-
-  function AccordionOpen(target){
-    var up = findDOMNode(target).getElementsByClassName('accordion-up'); 
-    var down = findDOMNode(target).getElementsByClassName('accordion-down'); 
-    target.classList.add("accordion-active");
-    var panel = target.nextElementSibling;
-    panel.style.display = "block";
-    up[0].style.display = "block";
-    down[0].style.display = "none";
   }
 
   const newItem = async (e) => {
@@ -271,29 +233,21 @@ const DeliveryOrders = ({handlePersistence, item, configure}) => {
             />
           </label>
 
-          <div className='accordion-container'>
-            <button ref={inputRef} className="accordion-button" onClick={handleAccordionClick}>
-              Itens
-              <BiDownArrow className='accordion-down'/>
-              <BiUpArrow className='accordion-up'/>
-            </button>
-            <div className="accordion-panel">
-
-              {newItems.map((newItem) => (
-                  <div key={newItem} id={newItem}>                            
-                  </div>                   
-              ))}         
-                
-              <button onClick={newItem}
-                      disabled = {configure.disableInputs}
-                      className="input-edit-submit"
-              >Adicionar</button>
-              <div className="clear-both">                
-              </div>
-
+          <AppAccordion open={true}
+                        title={"Itens"}
+          >
+            {newItems.map((newItem) => (
+                <div key={newItem} id={newItem}>                            
+                </div>                   
+            ))}                         
+            <button onClick={newItem}
+                    disabled = {configure.disableInputs}
+                    className="input-edit-submit"
+            >Adicionar</button>
+            <div className="clear-both">                
             </div>
-          </div>
-        
+          </AppAccordion>
+
           <div>
             <input type="submit"                    
                    value="Enviar"

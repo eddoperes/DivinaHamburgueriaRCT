@@ -1,15 +1,10 @@
 //grid component
 import Phone from '../shared/Phone'
 import Address from '../shared/Address'
+import AppAccordion from '../../components/AppAccordion'
 
 //react hooks
-import { findDOMNode } from 'react-dom';
-import { useState, useEffect, useRef } from "react";
-
-//data hooks
-
-//icons
-import { BiDownArrow, BiUpArrow } from 'react-icons/bi';
+import { useState, useEffect } from "react";
 
 const Providers = ({handlePersistence, item, configure}) => {
 
@@ -20,25 +15,12 @@ const Providers = ({handlePersistence, item, configure}) => {
     const [elementsAddress, setElementsAddress] = useState([]);
     const [elementsPhone, setElementsPhone] = useState([]);
   
-    //ref
-    const inputRefAddress = useRef(null);
-    const inputRefPhone = useRef(null);
-  
-    //data
-
+    //init
     useEffect(() => {             
    
       setName(item.name);
       setCNPJ(item.cnpj);                       
 
-      setTimeout(() => {
-        if (inputRefAddress.current !== null){              
-          AccordionOpen(inputRefAddress.current);    
-        }
-        if (inputRefPhone.current !== null){              
-          AccordionOpen(inputRefPhone.current);    
-        }
-      }, 200); 
     }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
   
     //func
@@ -63,37 +45,6 @@ const Providers = ({handlePersistence, item, configure}) => {
       data.phone = itemPhone;
       
       handlePersistence(data)
-    }
-  
-    function handleAccordionClick(e){
-      e.preventDefault();    
-      var target = e.target; 
-      for(var i=0; i<3; i++){
-        var up = findDOMNode(target).getElementsByClassName('accordion-up'); 
-        var down = findDOMNode(target).getElementsByClassName('accordion-down'); 
-        if (up.length === 0) {target = target.parentNode;} else {break};      
-      }
-      target.classList.toggle("accordion-active");
-      var panel = target.nextElementSibling;
-      if (panel.style.display === "block") {
-        panel.style.display = "none";
-        up[0].style.display = "none";
-        down[0].style.display = "block";
-      } else {
-        panel.style.display = "block";
-        up[0].style.display = "block";
-        down[0].style.display = "none";
-      }
-    } 
-  
-    function AccordionOpen(target){
-      var up = findDOMNode(target).getElementsByClassName('accordion-up'); 
-      var down = findDOMNode(target).getElementsByClassName('accordion-down'); 
-      target.classList.add("accordion-active");
-      var panel = target.nextElementSibling;
-      panel.style.display = "block";
-      up[0].style.display = "block";
-      down[0].style.display = "none";
     }
   
     function handleGetItemAddress(getItem){
@@ -169,37 +120,25 @@ const Providers = ({handlePersistence, item, configure}) => {
               />
             </label>
               
-            <div className='accordion-container'>
-              <button ref={inputRefAddress} className="accordion-button" onClick={handleAccordionClick}>Endereço
-                <BiDownArrow className='accordion-down'/>
-                <BiUpArrow className='accordion-up'/>
-              </button>
-              <div className="accordion-panel" >              
-                <label>                  
-                    <Address configure={configure}
-                             item={item?.address}
-                             handleGetItem={handleGetItemAddress}
-                    >
-                    </Address>
-                </label>
-              </div>
-            </div>
+            <AppAccordion open={true}
+                          title={"Endereço"}
+            >
+              <Address configure={configure}
+                        item={item?.address}
+                        handleGetItem={handleGetItemAddress}
+              >
+              </Address>
+            </AppAccordion>
 
-            <div className='accordion-container'>
-              <button ref={inputRefPhone} className="accordion-button" onClick={handleAccordionClick}>Telefone
-                <BiDownArrow className='accordion-down'/>
-                <BiUpArrow className='accordion-up'/>
-              </button>
-              <div className="accordion-panel" >              
-                <label>                  
-                    <Phone configure={configure}
-                           item={item?.phone}
-                           handleGetItem={handleGetItemPhone}
-                    >                          
-                    </Phone>
-                </label>
-              </div>
-            </div>
+            <AppAccordion open={true}
+                          title={"Telefone"}
+            >
+              <Phone configure={configure}
+                      item={item?.phone}
+                      handleGetItem={handleGetItemPhone}
+              >                          
+              </Phone>
+            </AppAccordion>
 
             {!configure.disableInputs && 
               <div>
