@@ -42,8 +42,7 @@ export const useFetchApi = () => {
             if (res.status === 401){
                 setUnauthorized(true);
             }
-            if (res.ok === false){     
-                //console.log(res)           
+            if (res.ok === false){                 
                 throw new Error("Not 2xx response");
             }
             const data = await res.json();
@@ -101,7 +100,9 @@ export const useFetchApi = () => {
                 setUnauthorized(true);
             }
             if (res.ok === false){
-                throw new Error("Not 2xx response");
+                //console.log(res)  
+                const resBody = await res.json();
+                throw new Error(`Not 2xx response ${JSON.stringify(resBody)}`);
             } 
             const resBody = await res.json();
             setData(resBody);           

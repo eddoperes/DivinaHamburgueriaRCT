@@ -4,7 +4,7 @@ import { MainContext } from '../contexts/MainContext'
 
 export const useFetchHallOrders = () => {
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
@@ -12,31 +12,31 @@ export const useFetchHallOrders = () => {
            apiRemove} = useFetchApi();
 
     const hallOrdersGetAll = async () => {
-        await apiGetMany(`${url}/allorders`);
+        await apiGetMany(`${url}/hallorders/${version}`);
     }
 
     const hallOrdersGetByCode = async (code) => {
-        await apiGetMany(`${url}/hallorders/getbycode?code=${code}`);
+        await apiGetMany(`${url}/hallorders/${version}/getbycode?code=${code}`);
     }
 
     const hallOrdersGetById = async (id) => {
-        await apiGetById(`${url}/hallorders`, id);
+        await apiGetById(`${url}/hallorders/${version}`, id);
     }
 
     const hallOrdersAdd = async (data) => {
-        await apiAdd(`${url}/hallorders`, data);
+        await apiAdd(`${url}/hallorders/${version}`, data);
     }
 
     const hallOrdersEdit = async (id, data) => {
-        await apiEdit(`${url}/hallorders`, id, data);
+        await apiEdit(`${url}/hallorders/${version}`, id, data);
     }
 
     const hallOrdersPatch = async (id, data) => {
-        await apiPatch(`${url}/hallorders`, id, data);
+        await apiPatch(`${url}/hallorders/${version}`, id, data);
     }
 
     const hallOrdersRemove = async (id) => {
-        await apiRemove(`${url}/hallorders`, id);
+        await apiRemove(`${url}/hallorders/${version}`, id);
     }
 
     return {data, error, unauthorized, waiting,

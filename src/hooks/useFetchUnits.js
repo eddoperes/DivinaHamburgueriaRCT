@@ -4,7 +4,7 @@ import { MainContext } from '../contexts/MainContext'
 
 export const useFetchUnits = () => {
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
@@ -12,23 +12,23 @@ export const useFetchUnits = () => {
            apiRemove} = useFetchApi();
 
     const unitsGetAll = async () => {
-        await apiGetMany(`${url}/units`);
+        await apiGetMany(`${url}/units/${version}`);
     }
 
     const unitsGetById = async (id) => {
-        await apiGetById(`${url}/units`, id);
+        await apiGetById(`${url}/units/${version}`, id);
     }
 
     const unitsAdd = async (data) => {
-        await apiAdd(`${url}/units`, data);
+        await apiAdd(`${url}/units/${version}`, data);
     }
 
     const unitsEdit = async (id, data) => {
-        await apiEdit(`${url}/units`, id, data);
+        await apiEdit(`${url}/units/${version}`, id, data);
     }
 
     const unitsRemove = async (id) => {
-        await apiRemove(`${url}/units`, id);
+        await apiRemove(`${url}/units/${version}`, id);
     }
 
     return {data, error, unauthorized, waiting,

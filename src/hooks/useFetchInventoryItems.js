@@ -4,7 +4,7 @@ import { MainContext } from '../contexts/MainContext'
 
 export const useFetchInventoryItems = () => {
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
@@ -12,31 +12,31 @@ export const useFetchInventoryItems = () => {
            apiRemove} = useFetchApi();
 
     const inventoryItemsGetAll = async () => {
-        await apiGetMany(`${url}/inventoryitems`);
+        await apiGetMany(`${url}/inventoryitems/${version}`);
     }
 
     const inventoryItemsGetDistinctNames = async () => {        
-        await apiGetMany(`${url}/inventoryitems/getdistinctnames`);
+        await apiGetMany(`${url}/inventoryitems/${version}/getdistinctnames`);
     }
 
     const inventoryItemsGetByNameAndOrType = async (name, type) => {
-        await apiGetMany(`${url}/inventoryitems/getbynameandortype?name=${name}&type=${type}`);
+        await apiGetMany(`${url}/inventoryitems/${version}/getbynameandortype?name=${name}&type=${type}`);
     }
 
     const inventoryItemsGetById = async (id) => {
-        await apiGetById(`${url}/inventoryitems`, id);
+        await apiGetById(`${url}/inventoryitems/${version}`, id);
     }
 
     const inventoryItemsAdd = async (data) => {
-        await apiAdd(`${url}/inventoryitems`, data);
+        await apiAdd(`${url}/inventoryitems/${version}`, data);
     }
 
     const inventoryItemsEdit = async (id, data) => {
-        await apiEdit(`${url}/inventoryitems`, id, data);
+        await apiEdit(`${url}/inventoryitems/${version}`, id, data);
     }
 
     const inventoryItemsRemove = async (id) => {
-        await apiRemove(`${url}/inventoryitems`, id);
+        await apiRemove(`${url}/inventoryitems/${version}`, id);
     }
 
     return {data, error, unauthorized, waiting,

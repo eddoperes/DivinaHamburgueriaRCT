@@ -10,7 +10,7 @@ export const useFetchMenuItemsResale = () => {
     const mutexWithTimeout = withTimeout(new Mutex(), 10);
     const mutexTimeoutErrorMessage = "timeout while waiting for mutex to become available";
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
@@ -18,7 +18,7 @@ export const useFetchMenuItemsResale = () => {
            apiRemove} = useFetchApi();
 
     const menuItemsResaleGetAll = async () => {
-        await apiGetMany(`${url}/menuitemsResale`);
+        await apiGetMany(`${url}/menuitemsResale/${version}`);
     }
 
     const menuItemsResaleGetByName = async (name) => {                        
@@ -28,7 +28,7 @@ export const useFetchMenuItemsResale = () => {
         try {
             await mutexWithTimeout.runExclusive(async () => {              
                 // Dispatch the network request
-                await apiGetMany(`${url}/menuitemsResale/getbyname?name=${name}`);
+                await apiGetMany(`${url}/menuitemsResale/${version}/getbyname?name=${name}`);
                 setExecuting(false);   
             });
         } catch (e) {                      
@@ -40,19 +40,19 @@ export const useFetchMenuItemsResale = () => {
     }
 
     const menuItemsResaleGetById = async (id) => {
-        await apiGetById(`${url}/menuitemsResale`, id);
+        await apiGetById(`${url}/menuitemsResale/${version}`, id);
     }
 
     const menuItemsResaleAdd = async (data) => {
-        await apiAdd(`${url}/menuitemsResale`, data);
+        await apiAdd(`${url}/menuitemsResale/${version}`, data);
     }
 
     const menuItemsResaleEdit = async (id, data) => {
-        await apiEdit(`${url}/menuitemsResale`, id, data);
+        await apiEdit(`${url}/menuitemsResale/${version}`, id, data);
     }
 
     const menuItemsResaleRemove = async (id) => {
-        await apiRemove(`${url}/menuitemsResale`, id);
+        await apiRemove(`${url}/menuitemsResale/${version}`, id);
     }
 
     return {data, error, unauthorized,  waiting,

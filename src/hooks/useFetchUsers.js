@@ -10,7 +10,7 @@ export const useFetchUsers = () => {
     const mutexWithTimeout = withTimeout(new Mutex(), 10);
     const mutexTimeoutErrorMessage = "timeout while waiting for mutex to become available";
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
@@ -18,7 +18,7 @@ export const useFetchUsers = () => {
            apiRemove} = useFetchApi();
 
     const usersGetAll = async () => {
-        await apiGetMany(`${url}/users`);
+        await apiGetMany(`${url}/users/${version}`);
     }
 
     const usersGetByName = async (name) => {                        
@@ -28,7 +28,7 @@ export const useFetchUsers = () => {
         try {
             await mutexWithTimeout.runExclusive(async () => {              
                 // Dispatch the network request
-                await apiGetMany(`${url}/users/getbyname?name=${name}`);
+                await apiGetMany(`${url}/users/${version}/getbyname?name=${name}`);
                 setExecuting(false);   
             });
         } catch (e) {                      
@@ -40,19 +40,19 @@ export const useFetchUsers = () => {
     }
 
     const usersGetById = async (id) => {
-        await apiGetById(`${url}/users`, id);
+        await apiGetById(`${url}/users/${version}`, id);
     }
 
     const usersAdd = async (data) => {
-        await apiAdd(`${url}/users`, data);
+        await apiAdd(`${url}/users/${version}`, data);
     }
 
     const usersEdit = async (id, data) => {
-        await apiPatch(`${url}/users`, id, data);
+        await apiPatch(`${url}/users/${version}`, id, data);
     }
 
     const usersRemove = async (id) => {
-        await apiRemove(`${url}/users`, id);
+        await apiRemove(`${url}/users/${version}`, id);
     }
 
     return {data, error, unauthorized,  waiting,

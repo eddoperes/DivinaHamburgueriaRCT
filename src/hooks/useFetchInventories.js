@@ -4,7 +4,7 @@ import { MainContext } from '../contexts/MainContext'
 
 export const useFetchInventories = () => {
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
@@ -12,27 +12,27 @@ export const useFetchInventories = () => {
            apiRemove} = useFetchApi();
 
     const inventoryGetAll = async () => {
-        await apiGetMany(`${url}/inventories`);
+        await apiGetMany(`${url}/inventories/${version}`);
     }
 
     const inventoryGetByEatable = async (eatableid) => {
-        await apiGetMany(`${url}/inventories/getbyeatable?eatableid=${eatableid}`);
+        await apiGetMany(`${url}/inventories/${version}/getbyeatable?eatableid=${eatableid}`);
     }
 
     const inventoryGetById = async (id) => {
-        await apiGetById(`${url}/inventories`, id);
+        await apiGetById(`${url}/inventories/${version}`, id);
     }
 
     const inventoryAdd = async (data) => {
-        await apiAdd(`${url}/inventories`, data);
+        await apiAdd(`${url}/inventories/${version}`, data);
     }
 
     const inventoryEdit = async (id, data) => {
-        await apiEdit(`${url}/inventories`, id, data);
+        await apiEdit(`${url}/inventories/${version}`, id, data);
     }
 
     const inventoryRemove = async (id) => {
-        await apiRemove(`${url}/inventories`, id);
+        await apiRemove(`${url}/inventories/${version}`, id);
     }
 
     return {data, error, unauthorized, waiting,

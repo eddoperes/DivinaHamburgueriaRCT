@@ -4,13 +4,13 @@ import { MainContext } from '../contexts/MainContext'
 
 export const useFetchQuantityAlarmsTriggered = () => {
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany} = useFetchApi();
 
     const quantityAlarmsTriggeredGetAll = async () => {
-        await apiGetMany(`${url}/quantityalarmstriggered`);
+        await apiGetMany(`${url}/quantityalarmstriggered/${version}`);
     }
 
     return {data, error, unauthorized, waiting,

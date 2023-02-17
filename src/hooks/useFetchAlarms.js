@@ -4,7 +4,7 @@ import { MainContext } from '../contexts/MainContext'
 
 export const useFetchAlarms = () => {
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
@@ -12,27 +12,27 @@ export const useFetchAlarms = () => {
            apiRemove} = useFetchApi();
 
     const alarmsGetAll = async () => {
-        await apiGetMany(`${url}/alarms`);
+        await apiGetMany(`${url}/alarms/${version}`);
     }
 
     const alarmsGetByEatable = async (eatableid) => {
-        await apiGetMany(`${url}/alarms/getbyeatable?eatableid=${eatableid}`);
+        await apiGetMany(`${url}/alarms/${version}/getbyeatable?eatableid=${eatableid}`);
     }
 
     const alarmsGetById = async (id) => {
-        await apiGetById(`${url}/alarms`, id);
+        await apiGetById(`${url}/alarms/${version}`, id);
     }
 
     const alarmsAdd = async (data) => {
-        await apiAdd(`${url}/alarms`, data);
+        await apiAdd(`${url}/alarms/${version}`, data);
     }
 
     const alarmsEdit = async (id, data) => {
-        await apiEdit(`${url}/alarms`, id, data);
+        await apiEdit(`${url}/alarms/${version}`, id, data);
     }
 
     const alarmsRemove = async (id) => {
-        await apiRemove(`${url}/alarms`, id);
+        await apiRemove(`${url}/alarms/${version}`, id);
     }
 
     return {data, error, unauthorized, waiting,

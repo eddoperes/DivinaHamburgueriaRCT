@@ -10,7 +10,7 @@ export const useFetchMenus = () => {
     const mutexWithTimeout = withTimeout(new Mutex(), 10);
     const mutexTimeoutErrorMessage = "timeout while waiting for mutex to become available";
 
-    const { url } = useContext(MainContext);
+    const { url, version } = useContext(MainContext);
 
     const {data, error, unauthorized, waiting,
            apiGetMany, apiGetById, 
@@ -18,7 +18,7 @@ export const useFetchMenus = () => {
            apiRemove} = useFetchApi();
 
     const menusGetAll = async () => {
-        await apiGetMany(`${url}/menus`);
+        await apiGetMany(`${url}/menus/${version}`);
     }
 
     const menusGetByName = async (name) => {                        
@@ -28,7 +28,7 @@ export const useFetchMenus = () => {
         try {
             await mutexWithTimeout.runExclusive(async () => {              
                 // Dispatch the network request
-                await apiGetMany(`${url}/menus/getbyname?name=${name}`);
+                await apiGetMany(`${url}/menus/${version}/getbyname?name=${name}`);
                 setExecuting(false);   
             });
         } catch (e) {                      
@@ -40,19 +40,19 @@ export const useFetchMenus = () => {
     }
 
     const menusGetById = async (id) => {
-        await apiGetById(`${url}/menus`, id);
+        await apiGetById(`${url}/menus/${version}`, id);
     }
 
     const menusAdd = async (data) => {
-        await apiAdd(`${url}/menus`, data);
+        await apiAdd(`${url}/menus/${version}`, data);
     }
 
     const menusEdit = async (id, data) => {
-        await apiEdit(`${url}/menus`, id, data);
+        await apiEdit(`${url}/menus/${version}`, id, data);
     }
 
     const menusRemove = async (id) => {
-        await apiRemove(`${url}/menus`, id);
+        await apiRemove(`${url}/menus/${version}`, id);
     }
 
     return {data, error, unauthorized,  waiting,
