@@ -164,7 +164,7 @@ const Menus = ({handlePersistence, item, configure}) => {
                               handleResetTextValidation(e);
                             }
                    }
-                   maxLength={20}         
+                   maxLength={100}         
                    required  
                    onInvalid={(e) => e.target.setCustomValidity("Este campo precisa ser preenchido!")}        
             />
@@ -184,15 +184,16 @@ const Menus = ({handlePersistence, item, configure}) => {
                 onInvalid={(e) => e.target.setCustomValidity("A descrição precisa ser preenchida!")}
             />
           </label>
-                    
-          <input type="checkbox"
-                  className='input-edit'
-                  name="state"
-                  checked={state}  
-                  disabled={configure.disableInputs}
-                  onChange={(e) => setState(e.target.checked ? 1 : 0)}      
-          />
-          <label>Ativo</label> 
+
+          <label>          
+            <input type="checkbox"
+                    className='input-edit'
+                    name="state"
+                    checked={state}  
+                    disabled={configure.disableInputs}
+                    onChange={(e) => setState(e.target.checked ? 1 : 0)}      
+            />
+          Ativo</label> 
 
           <AppAccordion open={true}
                         title={"Itens"}
